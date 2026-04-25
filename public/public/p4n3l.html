@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>404 Not Found</title>
+    <link rel="stylesheet" href="p4n3l.css">
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1>🎬 CALL SHEET ADMIN</h1>
+            <div class="header-actions">
+                <button onclick="window.location.href='/'">← НА САЙТ</button>
+                <button onclick="exportData()">📥 ЭКСПОРТ</button>
+                <button onclick="importData()">📤 ИМПОРТ</button>
+                <button onclick="manualSyncToGist()">🔄 СИНХР</button>
+            </div>
+        </header>
+
+        <section class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-icon">👥</div>
+                <div class="stat-info">
+                    <div class="stat-label">Всего визитов</div>
+                    <div class="stat-value" id="totalVisits">0</div>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">🔓</div>
+                <div class="stat-info">
+                    <div class="stat-label">Разблокировок</div>
+                    <div class="stat-value" id="unlockCount">0</div>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">📅</div>
+                <div class="stat-info">
+                    <div class="stat-label">Событий</div>
+                    <div class="stat-value" id="eventsCreated">0</div>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">💬</div>
+                <div class="stat-info">
+                    <div class="stat-label">Комментариев</div>
+                    <div class="stat-value" id="commentsCount">0</div>
+                </div>
+            </div>
+        </section>
+
+        <section class="section">
+            <h2>📱 Устройства и браузеры</h2>
+            <div class="devices-grid">
+                <div class="device-card">
+                    <h3>По устройствам</h3>
+                    <div id="deviceStats" class="stats-list"></div>
+                </div>
+                <div class="device-card">
+                    <h3>По браузерам</h3>
+                    <div id="browserStats" class="stats-list"></div>
+                </div>
+                <div class="device-card">
+                    <h3>По ОС</h3>
+                    <div id="osStats" class="stats-list"></div>
+                </div>
+            </div>
+        </section>
+
+        <section class="section">
+            <h2>📈 Активность по дням</h2>
+            <div class="chart-container">
+                <canvas id="visitsChart"></canvas>
+            </div>
+        </section>
+
+        <section class="section">
+            <h2>📋 История визитов</h2>
+            <div class="table-container">
+                <table id="visitsTable">
+                    <thead>
+                        <tr>
+                            <th>Время</th>
+                            <th>IP</th>
+                            <th>Устройство</th>
+                            <th>Браузер</th>
+                            <th>ОС</th>
+                            <th>Действие</th>
+                        </tr>
+                    </thead>
+                    <tbody id="visitsTableBody"></tbody>
+                </table>
+            </div>
+        </section>
+
+        <section class="section danger-zone">
+            <h2>⚠️ Опасная зона</h2>
+            <div class="danger-actions">
+                <button class="danger-btn" onclick="resetApp()">🔄 СБРОС ДАННЫХ</button>
+                <button class="danger-btn" onclick="resetAnalytics()">📊 СБРОС АНАЛИТИКИ</button>
+                <button class="danger-btn" onclick="clearLocalStorage()">🗑️ ОЧИСТИТЬ ВСЕ</button>
+            </div>
+            <div class="status" id="status"></div>
+        </section>
+
+        <section class="section">
+            <h2>🗄️ Данные</h2>
+            <button onclick="toggleDataView()" class="toggle-btn">Показать/Скрыть</button>
+            <pre id="dataView" style="display: none;"></pre>
+        </section>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="p4n3l.js"></script>
+</body>
+</html>
