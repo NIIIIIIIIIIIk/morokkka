@@ -1,7 +1,7 @@
 // ============ ЗАЩИТА ============
-var SECRET_KEY = 'spice-melange-8472';
+var SECRET_KEY = 'HuItA';
 var params = new URLSearchParams(window.location.search);
-if (params.get('key') !== SECRET_KEY && window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1') {
+if (params.get('key') !== SECRET_KEY && window.location.hostname !== 'localhost' && window.location.hostname !== '172.28.240.1') {
     document.body.innerHTML = '<div style="display:flex;justify-content:center;align-items:center;height:100vh;background:#0a0a0a;color:#888;font-family:monospace"><div style="text-align:center"><h1 style="font-size:72px;color:#e50914">404</h1><p>File not found</p></div></div>';
     throw new Error('Access denied');
 }
