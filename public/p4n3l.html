@@ -11,10 +11,11 @@
         <header class="header">
             <h1>🎬 CALL SHEET ADMIN</h1>
             <div class="header-actions">
-                <button onclick="window.location.href='/'">← НА САЙТ</button>
+                <button onclick="goToSite()">← НА САЙТ</button>
                 <button onclick="exportData()">📥 ЭКСПОРТ</button>
                 <button onclick="importData()">📤 ИМПОРТ</button>
-                <button onclick="manualSyncToGist()">🔄 СИНХР</button>
+                <button onclick="syncNow()">🔄 СИНХР</button>
+                <button onclick="clearToken()">🔑 СМЕНА ТОКЕНА</button>
             </div>
         </header>
 
@@ -98,7 +99,7 @@
             <div class="danger-actions">
                 <button class="danger-btn" onclick="resetApp()">🔄 СБРОС ДАННЫХ</button>
                 <button class="danger-btn" onclick="resetAnalytics()">📊 СБРОС АНАЛИТИКИ</button>
-                <button class="danger-btn" onclick="clearLocalStorage()">🗑️ ОЧИСТИТЬ ВСЕ</button>
+                <button class="danger-btn" onclick="clearAll()">🗑️ ОЧИСТИТЬ ВСЕ</button>
             </div>
             <div class="status" id="status"></div>
         </section>
