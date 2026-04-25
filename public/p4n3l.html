@@ -4,114 +4,636 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>404 Not Found</title>
-    <link rel="stylesheet" href="p4n3l.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --bg: #0a0a0a;
+            --bg2: #111;
+            --bg3: #1a1a1a;
+            --text: #fff;
+            --text2: #888;
+            --accent: #e50914;
+            --border: #333;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            background: var(--bg);
+            color: var(--text);
+            font-family: 'Courier New', monospace;
+            padding: 20px;
+        }
+        .container { max-width: 1400px; margin: 0 auto; }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 0;
+            border-bottom: 2px solid var(--accent);
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+        .header h1 { font-size: 24px; font-weight: normal; }
+        .header-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+        button {
+            background: transparent;
+            border: 1px solid var(--border);
+            color: var(--text);
+            padding: 8px 16px;
+            font-family: 'Courier New', monospace;
+            font-size: 11px;
+            text-transform: uppercase;
+            cursor: pointer;
+            white-space: nowrap;
+        }
+        button:hover { border-color: var(--accent); color: var(--accent); }
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 16px;
+            margin-bottom: 30px;
+        }
+        .stat-card {
+            background: var(--bg2);
+            border: 1px solid var(--border);
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .stat-icon { font-size: 28px; }
+        .stat-label { color: var(--text2); font-size: 10px; text-transform: uppercase; }
+        .stat-value { font-size: 24px; font-weight: bold; color: var(--accent); }
+        .section {
+            background: var(--bg2);
+            border: 1px solid var(--border);
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        .section h2 { font-size: 16px; margin-bottom: 16px; padding-bottom: 12px; border-bottom: 1px solid var(--border); }
+        .devices-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; }
+        .device-card { background: var(--bg3); padding: 14px; }
+        .device-card h3 { font-size: 13px; margin-bottom: 12px; color: var(--text2); }
+        .stat-item { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
+        .stat-name { color: var(--text2); font-size: 11px; min-width: 70px; }
+        .stat-bar { flex: 1; height: 4px; background: var(--border); }
+        .stat-bar-fill { height: 100%; background: var(--accent); }
+        .stat-count { font-size: 12px; font-weight: bold; }
+        .chart-container { height: 280px; }
+        .table-container { overflow: auto; max-height: 400px; }
+        table { width: 100%; border-collapse: collapse; }
+        th { padding: 10px; text-align: left; border-bottom: 1px solid var(--border); color: var(--text2); font-size: 10px; position: sticky; top: 0; background: var(--bg2); }
+        td { padding: 8px 10px; border-bottom: 1px solid var(--border); font-size: 11px; }
+        .danger-zone { border-color: var(--accent); }
+        .danger-actions { display: flex; gap: 12px; flex-wrap: wrap; }
+        .danger-btn { border-color: var(--accent); color: var(--accent); }
+        .danger-btn:hover { background: var(--accent); color: #fff; }
+        .status { margin-top: 14px; padding: 10px; background: var(--bg3); font-size: 11px; }
+        .status.ok { border-left: 3px solid #00c853; }
+        .status.err { border-left: 3px solid var(--accent); }
+        #dataView { background: var(--bg3); padding: 16px; font-size: 10px; border: 1px solid var(--border); max-height: 400px; overflow: auto; display: none; white-space: pre-wrap; word-break: break-all; }
+        @media (max-width: 768px) { body { padding: 10px; } .danger-actions { flex-direction: column; } }
+    </style>
 </head>
 <body>
-    <div class="container">
-        <header class="header">
-            <h1>🎬 CALL SHEET ADMIN</h1>
-            <div class="header-actions">
-                <button onclick="goToSite()">← НА САЙТ</button>
-                <button onclick="exportData()">📥 ЭКСПОРТ</button>
-                <button onclick="importData()">📤 ИМПОРТ</button>
-                <button onclick="syncNow()">🔄 СИНХР</button>
-                <button onclick="clearToken()">🔑 СМЕНА ТОКЕНА</button>
-            </div>
-        </header>
 
-        <section class="stats-grid">
-            <div class="stat-card">
-                <div class="stat-icon">👥</div>
-                <div class="stat-info">
-                    <div class="stat-label">Всего визитов</div>
-                    <div class="stat-value" id="totalVisits">0</div>
-                </div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-icon">🔓</div>
-                <div class="stat-info">
-                    <div class="stat-label">Разблокировок</div>
-                    <div class="stat-value" id="unlockCount">0</div>
-                </div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-icon">📅</div>
-                <div class="stat-info">
-                    <div class="stat-label">Событий</div>
-                    <div class="stat-value" id="eventsCreated">0</div>
-                </div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-icon">💬</div>
-                <div class="stat-info">
-                    <div class="stat-label">Комментариев</div>
-                    <div class="stat-value" id="commentsCount">0</div>
-                </div>
-            </div>
-        </section>
+<div class="container">
+    <header class="header">
+        <h1>🎬 ADMIN PANEL</h1>
+        <div class="header-actions">
+            <button onclick="location.href='/'">← САЙТ</button>
+            <button onclick="exportData()">📥 ЭКСПОРТ</button>
+            <button onclick="importData()">📤 ИМПОРТ</button>
+            <button onclick="collectAll()">📦 СОБРАТЬ ВСЕ</button>
+            <button onclick="syncNow()">🔄 СИНХР GIST</button>
+            <button onclick="resetToken()">🔑 ТОКЕН</button>
+        </div>
+    </header>
 
-        <section class="section">
-            <h2>📱 Устройства и браузеры</h2>
-            <div class="devices-grid">
-                <div class="device-card">
-                    <h3>По устройствам</h3>
-                    <div id="deviceStats" class="stats-list"></div>
-                </div>
-                <div class="device-card">
-                    <h3>По браузерам</h3>
-                    <div id="browserStats" class="stats-list"></div>
-                </div>
-                <div class="device-card">
-                    <h3>По ОС</h3>
-                    <div id="osStats" class="stats-list"></div>
-                </div>
-            </div>
-        </section>
+    <div id="syncInfo" style="background:#1a1a1a;border:1px solid #e6b450;padding:10px 14px;margin-bottom:16px;font-size:11px;color:#e6b450;"></div>
 
-        <section class="section">
-            <h2>📈 Активность по дням</h2>
-            <div class="chart-container">
-                <canvas id="visitsChart"></canvas>
-            </div>
-        </section>
-
-        <section class="section">
-            <h2>📋 История визитов</h2>
-            <div class="table-container">
-                <table id="visitsTable">
-                    <thead>
-                        <tr>
-                            <th>Время</th>
-                            <th>IP</th>
-                            <th>Устройство</th>
-                            <th>Браузер</th>
-                            <th>ОС</th>
-                            <th>Действие</th>
-                        </tr>
-                    </thead>
-                    <tbody id="visitsTableBody"></tbody>
-                </table>
-            </div>
-        </section>
-
-        <section class="section danger-zone">
-            <h2>⚠️ Опасная зона</h2>
-            <div class="danger-actions">
-                <button class="danger-btn" onclick="resetApp()">🔄 СБРОС ДАННЫХ</button>
-                <button class="danger-btn" onclick="resetAnalytics()">📊 СБРОС АНАЛИТИКИ</button>
-                <button class="danger-btn" onclick="clearAll()">🗑️ ОЧИСТИТЬ ВСЕ</button>
-            </div>
-            <div class="status" id="status"></div>
-        </section>
-
-        <section class="section">
-            <h2>🗄️ Данные</h2>
-            <button onclick="toggleDataView()" class="toggle-btn">Показать/Скрыть</button>
-            <pre id="dataView" style="display: none;"></pre>
-        </section>
+    <div class="stats-grid">
+        <div class="stat-card"><div class="stat-icon">👥</div><div class="stat-info"><div class="stat-label">Всего визитов</div><div class="stat-value" id="totalVisits">0</div></div></div>
+        <div class="stat-card"><div class="stat-icon">🔓</div><div class="stat-info"><div class="stat-label">Разблокировок</div><div class="stat-value" id="unlockCount">0</div></div></div>
+        <div class="stat-card"><div class="stat-icon">📅</div><div class="stat-info"><div class="stat-label">Событий</div><div class="stat-value" id="eventsCreated">0</div></div></div>
+        <div class="stat-card"><div class="stat-icon">💬</div><div class="stat-info"><div class="stat-label">Комментариев</div><div class="stat-value" id="commentsCount">0</div></div></div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="p4n3l.js"></script>
+    <div class="section">
+        <h2>📱 Устройства и браузеры</h2>
+        <div class="devices-grid">
+            <div class="device-card"><h3>По устройствам</h3><div id="deviceStats"></div></div>
+            <div class="device-card"><h3>По браузерам</h3><div id="browserStats"></div></div>
+            <div class="device-card"><h3>По ОС</h3><div id="osStats"></div></div>
+        </div>
+    </div>
+
+    <div class="section">
+        <h2>📈 Активность по дням</h2>
+        <div class="chart-container"><canvas id="visitsChart"></canvas></div>
+    </div>
+
+    <div class="section">
+        <h2>📋 История визитов (последние 200)</h2>
+        <div class="table-container">
+            <table><thead><tr><th>Время</th><th>IP</th><th>Страница</th><th>Устройство</th><th>Браузер</th><th>ОС</th><th>Экран</th><th>Язык</th></tr></thead><tbody id="visitsBody"></tbody></table>
+        </div>
+    </div>
+
+    <div class="section danger-zone">
+        <h2>⚠️ Опасная зона</h2>
+        <div class="danger-actions">
+            <button class="danger-btn" onclick="resetApp()">🔄 СБРОС ДАННЫХ ПРИЛОЖЕНИЯ</button>
+            <button class="danger-btn" onclick="resetAnalytics()">📊 СБРОС АНАЛИТИКИ</button>
+            <button class="danger-btn" onclick="clearAll()">🗑️ ОЧИСТИТЬ ВСЁ</button>
+        </div>
+        <div class="status" id="status"></div>
+    </div>
+
+    <div class="section">
+        <h2>🗄️ Все данные localStorage</h2>
+        <button onclick="toggleData()">Показать/Скрыть</button>
+        <pre id="dataView"></pre>
+    </div>
+</div>
+
+<script>
+// ============ ЗАЩИТА ДОСТУПА ============
+var SECRET_KEY = 'spice-melange-8472';
+var params = new URLSearchParams(location.search);
+if (params.get('key') !== SECRET_KEY && location.hostname !== 'localhost' && location.hostname !== '127.0.0.1') {
+    document.body.innerHTML = '<div style="display:flex;justify-content:center;align-items:center;height:100vh;background:#0a0a0a;color:#888;font-family:monospace"><div style="text-align:center"><h1 style="font-size:72px;color:#e50914">404</h1><p>File not found</p></div></div>';
+    throw new Error('Access denied');
+}
+
+// ============ КОНФИГУРАЦИЯ ============
+var GIST_ID = 'ea1ea28fa7b5d1e3632392946af2f7bb';
+var GIST_FILE = 'call-sheet-analytics.json';
+var ANALYTICS_KEY = 'call_sheet_analytics';
+var TOKEN_KEY = 'gh_token';
+var SYNC_INTERVAL = 20000;
+
+// ============ ТОКЕН ============
+function getToken() {
+    var t = localStorage.getItem(TOKEN_KEY);
+    if (!t) {
+        t = prompt('Введите GitHub токен для синхронизации с Gist:\n(нажмите Cancel для режима только чтения)');
+        if (t) localStorage.setItem(TOKEN_KEY, t);
+    }
+    return t || '';
+}
+
+function resetToken() {
+    localStorage.removeItem(TOKEN_KEY);
+    alert('Токен удалён. При следующей синхронизации будет запрошен новый.');
+    location.reload();
+}
+
+// ============ РАБОТА С ДАННЫМИ ============
+function getAnalytics() {
+    var d = localStorage.getItem(ANALYTICS_KEY);
+    if (!d) {
+        d = {
+            visits: [],
+            totalVisits: 0,
+            unlockCount: 0,
+            eventsCreated: 0,
+            commentsCount: 0,
+            devices: {},
+            browsers: {},
+            os: {},
+            screens: {},
+            langs: {},
+            pages: {},
+            dailyStats: {},
+            lastSync: null
+        };
+        localStorage.setItem(ANALYTICS_KEY, JSON.stringify(d));
+        return d;
+    }
+    return JSON.parse(d);
+}
+
+function saveAnalytics(d) {
+    localStorage.setItem(ANALYTICS_KEY, JSON.stringify(d));
+}
+
+// ============ СИНХРОНИЗАЦИЯ С GITHUB GIST ============
+async function loadFromGist() {
+    try {
+        var headers = { Accept: 'application/vnd.github.v3+json' };
+        var t = getToken();
+        if (t) headers['Authorization'] = 'token ' + t;
+        
+        var r = await fetch('https://api.github.com/gists/' + GIST_ID, { headers: headers });
+        if (r.ok) {
+            var gist = await r.json();
+            if (gist.files && gist.files[GIST_FILE] && gist.files[GIST_FILE].content) {
+                console.log('✅ Данные загружены из Gist');
+                return JSON.parse(gist.files[GIST_FILE].content);
+            }
+        }
+    } catch (e) {
+        console.warn('⚠️ Ошибка загрузки из Gist:', e.message);
+    }
+    return null;
+}
+
+async function saveToGist() {
+    var t = getToken();
+    if (!t) {
+        console.log('ℹ️ Нет токена — сохранение в Gist недоступно');
+        return false;
+    }
+    
+    var d = getAnalytics();
+    d.lastSync = new Date().toISOString();
+    
+    try {
+        var r = await fetch('https://api.github.com/gists/' + GIST_ID, {
+            method: 'PATCH',
+            headers: {
+                'Authorization': 'token ' + t,
+                'Content-Type': 'application/json',
+                'Accept': 'application/vnd.github.v3+json'
+            },
+            body: JSON.stringify({
+                files: (function() {
+                    var f = {};
+                    f[GIST_FILE] = { content: JSON.stringify(d, null, 2) };
+                    return f;
+                })()
+            })
+        });
+        
+        if (r.ok) {
+            console.log('✅ Данные сохранены в Gist');
+            return true;
+        }
+    } catch (e) {
+        console.warn('⚠️ Ошибка сохранения в Gist:', e.message);
+    }
+    return false;
+}
+
+// ============ ОБЪЕДИНЕНИЕ ДАННЫХ ============
+function mergeData(local, cloud) {
+    if (!cloud) return local;
+    
+    // Объединяем визиты
+    var allVisits = (cloud.visits || []).concat(local.visits || []);
+    var seen = {};
+    var unique = [];
+    for (var i = 0; i < allVisits.length; i++) {
+        var v = allVisits[i];
+        var key = v.timestamp + '_' + v.ip + '_' + (v.page || '');
+        if (!seen[key]) {
+            seen[key] = true;
+            unique.push(v);
+        }
+    }
+    unique.sort(function(a, b) {
+        return new Date(b.timestamp) - new Date(a.timestamp);
+    });
+    
+    // Создаём объединённый объект
+    var merged = {
+        visits: unique,
+        totalVisits: unique.length,
+        unlockCount: (cloud.unlockCount || 0) + (local.unlockCount || 0),
+        eventsCreated: (cloud.eventsCreated || 0) + (local.eventsCreated || 0),
+        commentsCount: (cloud.commentsCount || 0) + (local.commentsCount || 0),
+        devices: {},
+        browsers: {},
+        os: {},
+        screens: {},
+        langs: {},
+        pages: {},
+        dailyStats: {},
+        lastSync: new Date().toISOString()
+    };
+    
+    // Объединяем счётчики
+    var keys = ['devices', 'browsers', 'os', 'screens', 'langs', 'pages', 'dailyStats'];
+    for (var k = 0; k < keys.length; k++) {
+        var key = keys[k];
+        // Копируем облачные данные
+        for (var ck in (cloud[key] || {})) {
+            merged[key][ck] = (cloud[key] && cloud[key][ck]) || 0;
+        }
+        // Добавляем локальные данные
+        for (var lk in (local[key] || {})) {
+            merged[key][lk] = (merged[key][lk] || 0) + ((local[key] && local[key][lk]) || 0);
+        }
+    }
+    
+    return merged;
+}
+
+// ============ ПОЛНАЯ СИНХРОНИЗАЦИЯ ============
+async function performSync() {
+    var cloud = await loadFromGist();
+    var local = getAnalytics();
+    
+    if (cloud) {
+        var merged = mergeData(local, cloud);
+        saveAnalytics(merged);
+        console.log('✅ Синхронизация завершена');
+    }
+    
+    await saveToGist();
+    refreshDisplay();
+}
+
+function syncNow() {
+    msg('🔄 Синхронизация...', 'ok');
+    performSync();
+}
+
+// ============ СБОР ДАННЫХ С ДРУГИХ УСТРОЙСТВ ============
+function collectAll() {
+    var count = parseInt(prompt('Сколько JSON-файлов собрать?\n(Экспортируйте данные с каждого устройства кнопкой ЭКСПОРТ)'));
+    if (!count || count < 1) return;
+    
+    var files = [];
+    
+    function loadFile(index) {
+        if (index >= count) {
+            // Все загружены — объединяем
+            var merged = getAnalytics();
+            for (var i = 0; i < files.length; i++) {
+                merged = mergeData(merged, files[i]);
+            }
+            saveAnalytics(merged);
+            refreshDisplay();
+            saveToGist().then(function() {
+                msg('✅ Собрано и объединено ' + count + ' файлов. Отправлено в Gist.', 'ok');
+            });
+            return;
+        }
+        
+        var inp = document.createElement('input');
+        inp.type = 'file';
+        inp.accept = '.json';
+        inp.style.display = 'none';
+        document.body.appendChild(inp);
+        
+        inp.onchange = function(e) {
+            var reader = new FileReader();
+            reader.onload = function(ev) {
+                try {
+                    var data = JSON.parse(ev.target.result);
+                    var analyticsData = data[ANALYTICS_KEY] || data;
+                    files.push(analyticsData);
+                    msg('📥 Загружен файл ' + (index + 1) + ' из ' + count, 'ok');
+                    document.body.removeChild(inp);
+                    loadFile(index + 1);
+                } catch (err) {
+                    msg('❌ Ошибка в файле ' + (index + 1), 'err');
+                    document.body.removeChild(inp);
+                    loadFile(index + 1);
+                }
+            };
+            reader.readAsText(e.target.files[0]);
+        };
+        
+        inp.click();
+    }
+    
+    msg('📦 Выберите файл 1 из ' + count, 'ok');
+    loadFile(0);
+}
+
+// ============ ОТОБРАЖЕНИЕ ============
+var chart = null;
+
+function refreshDisplay() {
+    var d = getAnalytics();
+    
+    // Статистика
+    document.getElementById('totalVisits').textContent = d.totalVisits || 0;
+    document.getElementById('unlockCount').textContent = d.unlockCount || 0;
+    document.getElementById('eventsCreated').textContent = d.eventsCreated || 0;
+    document.getElementById('commentsCount').textContent = d.commentsCount || 0;
+    
+    // Инфо синхронизации
+    var info = document.getElementById('syncInfo');
+    var tokenExists = !!localStorage.getItem(TOKEN_KEY);
+    info.innerHTML = '☁️ Gist: ' + GIST_ID.slice(0, 8) + '...' +
+        ' | 🔑 Токен: ' + (tokenExists ? '✅ Есть' : '❌ Нет (только чтение)') +
+        ' | ' + (d.lastSync ? '🟢 ' + new Date(d.lastSync).toLocaleString('ru-RU') : '🟡 Не синхронизировано');
+    
+    // Устройства/браузеры/ОС
+    var total = d.totalVisits || 1;
+    var categories = [
+        { id: 'deviceStats', data: d.devices || {} },
+        { id: 'browserStats', data: d.browsers || {} },
+        { id: 'osStats', data: d.os || {} }
+    ];
+    
+    for (var i = 0; i < categories.length; i++) {
+        var cat = categories[i];
+        var items = [];
+        for (var k in cat.data) {
+            items.push({ name: k, count: cat.data[k] });
+        }
+        items.sort(function(a, b) { return b.count - a.count; });
+        
+        var html = '';
+        if (items.length === 0) {
+            html = '<div class="stat-item"><span class="stat-name">Нет данных</span></div>';
+        } else {
+            for (var j = 0; j < items.length; j++) {
+                var pct = ((items[j].count / total) * 100).toFixed(1);
+                html += '<div class="stat-item">' +
+                    '<span class="stat-name">' + items[j].name + '</span>' +
+                    '<div class="stat-bar"><div class="stat-bar-fill" style="width:' + pct + '%"></div></div>' +
+                    '<span class="stat-count">' + items[j].count + '</span>' +
+                '</div>';
+            }
+        }
+        document.getElementById(cat.id).innerHTML = html;
+    }
+    
+    // График
+    showChart(d);
+    
+    // Таблица визитов
+    showTable(d);
+}
+
+function showChart(d) {
+    var stats = d.dailyStats || {};
+    var dates = Object.keys(stats).sort();
+    var values = dates.map(function(k) { return stats[k]; });
+    
+    var ctx = document.getElementById('visitsChart').getContext('2d');
+    if (chart) chart.destroy();
+    
+    chart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: dates.length ? dates : ['Нет данных'],
+            datasets: [{
+                label: 'Посещения',
+                data: values.length ? values : [0],
+                borderColor: '#e50914',
+                backgroundColor: 'rgba(229, 9, 20, 0.1)',
+                tension: 0.2,
+                fill: true,
+                pointBackgroundColor: '#e50914',
+                pointRadius: 3,
+                pointHoverRadius: 5
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { labels: { color: '#ffffff' } }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    grid: { color: '#333333' },
+                    ticks: { color: '#888888', stepSize: 1 }
+                },
+                x: {
+                    grid: { color: '#333333' },
+                    ticks: { color: '#888888' }
+                }
+            }
+        }
+    });
+}
+
+function showTable(d) {
+    var visits = (d.visits || []).slice().reverse().slice(0, 200);
+    var tbody = document.getElementById('visitsBody');
+    
+    if (visits.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;padding:40px;">Нет данных</td></tr>';
+        return;
+    }
+    
+    var html = '';
+    for (var i = 0; i < visits.length; i++) {
+        var v = visits[i];
+        html += '<tr>' +
+            '<td>' + new Date(v.timestamp).toLocaleString('ru-RU') + '</td>' +
+            '<td>' + (v.ip || '—') + '</td>' +
+            '<td>' + (v.page || '—') + '</td>' +
+            '<td>' + (v.device || '—') + '</td>' +
+            '<td>' + (v.browser || '—') + '</td>' +
+            '<td>' + (v.os || '—') + '</td>' +
+            '<td>' + (v.screen || '—') + '</td>' +
+            '<td>' + (v.lang || '—') + '</td>' +
+        '</tr>';
+    }
+    tbody.innerHTML = html;
+}
+
+// ============ УПРАВЛЕНИЕ ============
+function msg(text, type) {
+    var s = document.getElementById('status');
+    s.textContent = text;
+    s.className = 'status ' + (type || '');
+}
+
+function resetApp() {
+    if (confirm('⚠️ Сбросить все данные приложения (события, комментарии)?')) {
+        localStorage.removeItem('call_sheet_state');
+        localStorage.removeItem('has_seen_onboarding');
+        localStorage.removeItem('shown_easter_eggs');
+        msg('✅ Данные приложения сброшены', 'ok');
+        setTimeout(function() { location.reload(); }, 1500);
+    }
+}
+
+function resetAnalytics() {
+    if (confirm('⚠️ Сбросить только аналитику?')) {
+        localStorage.removeItem(ANALYTICS_KEY);
+        msg('✅ Аналитика сброшена', 'ok');
+        setTimeout(function() { location.reload(); }, 1500);
+    }
+}
+
+function clearAll() {
+    if (confirm('⚠️⚠️ ПОЛНАЯ ОЧИСТКА ВСЕХ ДАННЫХ! Вы уверены?')) {
+        localStorage.clear();
+        msg('✅ Всё очищено', 'ok');
+        setTimeout(function() { location.reload(); }, 1500);
+    }
+}
+
+function toggleData() {
+    var v = document.getElementById('dataView');
+    if (v.style.display === 'none' || !v.style.display) {
+        var all = {};
+        for (var i = 0; i < localStorage.length; i++) {
+            var k = localStorage.key(i);
+            try {
+                all[k] = JSON.parse(localStorage.getItem(k));
+            } catch (e) {
+                all[k] = localStorage.getItem(k);
+            }
+        }
+        v.textContent = JSON.stringify(all, null, 2);
+        v.style.display = 'block';
+    } else {
+        v.style.display = 'none';
+    }
+}
+
+function exportData() {
+    var all = {};
+    for (var i = 0; i < localStorage.length; i++) {
+        var k = localStorage.key(i);
+        try {
+            all[k] = JSON.parse(localStorage.getItem(k));
+        } catch (e) {
+            all[k] = localStorage.getItem(k);
+        }
+    }
+    var blob = new Blob([JSON.stringify(all, null, 2)], { type: 'application/json' });
+    var a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = 'analytics-' + new Date().toISOString().split('T')[0] + '.json';
+    a.click();
+    URL.revokeObjectURL(a.href);
+    msg('✅ Данные экспортированы', 'ok');
+}
+
+function importData() {
+    var inp = document.createElement('input');
+    inp.type = 'file';
+    inp.accept = '.json';
+    inp.onchange = function(e) {
+        var reader = new FileReader();
+        reader.onload = function(ev) {
+            try {
+                var data = JSON.parse(ev.target.result);
+                var current = getAnalytics();
+                var newData = data[ANALYTICS_KEY] || data;
+                var merged = mergeData(current, newData);
+                saveAnalytics(merged);
+                refreshDisplay();
+                msg('✅ Данные импортированы и объединены', 'ok');
+            } catch (err) {
+                msg('❌ Ошибка импорта', 'err');
+            }
+        };
+        reader.readAsText(e.target.files[0]);
+    };
+    inp.click();
+}
+
+// ============ ЗАПУСК ============
+window.onload = function() {
+    performSync();
+    setInterval(performSync, SYNC_INTERVAL);
+};
+</script>
+
 </body>
 </html>
