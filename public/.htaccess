@@ -1,0 +1,16 @@
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+  RewriteBase /
+  
+  # НЕ перенаправлять существующие файлы и папки
+  RewriteCond %{REQUEST_FILENAME} !-f
+  RewriteCond %{REQUEST_FILENAME} !-d
+  
+  # Всё остальное на index.html (для SPA)
+  RewriteRule . /index.html [L]
+</IfModule>
+
+# Кэширование изображений
+<FilesMatch "\.(jpg|jpeg|png|gif|ico|svg|webp)$">
+  Header set Cache-Control "max-age=31536000, public"
+</FilesMatch>

@@ -1,0 +1,386 @@
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: #000;
+  z-index: 10002;
+  font-family: 'Courier New', monospace;
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity 0.4s ease;
+}
+
+.overlay.visible {
+  opacity: 1;
+}
+
+.cyberpunkBg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image: url('/image/dlya-vzlom/city.jpg');
+  background-size: cover;
+  background-position: center;
+  filter: brightness(0.2) contrast(1.1);
+  z-index: 0;
+}
+
+.overlay.hacking .cyberpunkBg {
+  filter: brightness(0.12) blur(2px) contrast(1.3);
+}
+
+.glitchGif {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  z-index: 5;
+  pointer-events: none;
+  mix-blend-mode: screen;
+  opacity: 0.7;
+  animation: glitchShake 0.03s infinite, glitchFlash 0.06s infinite;
+}
+
+.glitchFlash {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: #0f0;
+  z-index: 10;
+  pointer-events: none;
+  animation: flashIn 0.1s ease-out;
+  mix-blend-mode: overlay;
+}
+
+@keyframes flashIn {
+  0% { opacity: 1; }
+  100% { opacity: 0; }
+}
+
+@keyframes glitchShake {
+  0% { transform: translate(0, 0); }
+  10% { transform: translate(-3px, 2px); }
+  20% { transform: translate(3px, -2px); }
+  30% { transform: translate(-2px, 3px); }
+  40% { transform: translate(2px, -3px); }
+  50% { transform: translate(-3px, -2px); }
+  60% { transform: translate(3px, 2px); }
+  70% { transform: translate(-2px, -2px); }
+  80% { transform: translate(2px, 2px); }
+  90% { transform: translate(-3px, 0); }
+  100% { transform: translate(0, 0); }
+}
+
+@keyframes glitchFlash {
+  0%, 100% { opacity: 0.5; }
+  25% { opacity: 0.8; }
+  50% { opacity: 0.3; }
+  75% { opacity: 0.9; }
+}
+
+.scanlines {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: repeating-linear-gradient(0deg, rgba(0,0,0,0.4) 0px, transparent 1px, transparent 2px);
+  z-index: 6;
+  pointer-events: none;
+}
+
+.vignette {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: radial-gradient(circle at center, transparent 30%, rgba(0,0,0,0.8) 100%);
+  z-index: 7;
+  pointer-events: none;
+}
+
+.matrixWrapper {
+  position: absolute;
+  top: 12%;
+  left: 8%;
+  right: 8%;
+  bottom: 12%;
+  z-index: 8;
+  pointer-events: none;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  background: transparent;
+}
+
+.matrixCanvas {
+  width: 100%;
+  height: 100%;
+  display: block;
+  opacity: 0.7;
+}
+
+/* Горизонтальная матрица — базовые стили */
+.horizontalMatrixWrapper {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  right: 0;
+  transform: translateY(-50%);
+  height: 500px;
+  z-index: 25;
+  pointer-events: none;
+  overflow: hidden;
+  border-top: 1px solid rgba(0, 130, 0, 0.2);
+  border-bottom: 1px solid rgba(0, 130, 0, 0.2);
+  background: rgba(0, 0, 0, 0.3);
+  box-shadow: 
+    0 0 20px rgba(0, 130, 0, 0.05),
+    inset 0 0 20px rgba(0, 0, 0, 0.5);
+}
+
+.horizontalCanvas {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.hackProgress {
+  position: absolute;
+  bottom: 90px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 400px;
+  z-index: 20;
+}
+
+.progressBar {
+  width: 100%;
+  height: 1px;
+  background: #0a0a0a;
+  border: none;
+}
+
+.progressFill {
+  height: 100%;
+  background: #0f0;
+  transition: width 0.1s linear;
+}
+
+.progressText {
+  color: #0f0;
+  font-size: 10px;
+  text-align: center;
+  margin-top: 10px;
+  text-transform: uppercase;
+  letter-spacing: 3px;
+  opacity: 0.8;
+}
+
+.hackLogs {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 450px;
+  background: rgba(0, 0, 0, 0.9);
+  border: 1px solid rgba(255, 255, 255, 0.04);
+  padding: 15px 20px;
+  z-index: 20;
+}
+
+.logLine {
+  color: #0f0;
+  font-size: 10px;
+  line-height: 1.7;
+  font-family: 'Courier New', monospace;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  opacity: 0.85;
+}
+
+.enterSection {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+  z-index: 30;
+}
+
+.accessGranted {
+  color: #0f0;
+  font-size: 14px;
+  text-transform: uppercase;
+  letter-spacing: 10px;
+  margin-bottom: 35px;
+  opacity: 0.9;
+  text-shadow: 0 0 20px #0f0;
+}
+
+.enterButton {
+  background: transparent;
+  border: 1px solid #0f0;
+  color: #0f0;
+  padding: 15px 50px;
+  font-size: 16px;
+  font-family: 'Courier New', monospace;
+  text-transform: uppercase;
+  letter-spacing: 8px;
+  cursor: pointer;
+  transition: all 0.2s;
+  box-shadow: 0 0 20px rgba(0, 255, 0, 0.2);
+}
+
+.enterButton:hover {
+  background: #0f0;
+  color: #000;
+  box-shadow: 0 0 40px #0f0;
+}
+
+/* ===== АДАПТАЦИЯ ПОД ТЕЛЕФОНЫ ===== */
+
+@media (max-width: 768px) {
+  .matrixWrapper {
+    left: 5%;
+    right: 5%;
+    top: 15%;
+    bottom: 15%;
+  }
+  
+  .hackProgress {
+    width: 300px;
+  }
+  
+  .hackLogs {
+    width: 350px;
+    padding: 12px 15px;
+  }
+  
+  .logLine {
+    font-size: 9px;
+  }
+  
+  /* Рамки под телефон — 60% высоты экрана, но не больше 400px */
+  .horizontalMatrixWrapper {
+    height: min(400px, 60vh);
+  }
+  
+  .accessGranted {
+    font-size: 11px;
+    letter-spacing: 6px;
+  }
+  
+  .enterButton {
+    padding: 12px 30px;
+    font-size: 13px;
+    letter-spacing: 5px;
+  }
+}
+
+@media (max-width: 480px) {
+  .matrixWrapper {
+    left: 3%;
+    right: 3%;
+  }
+  
+  .hackProgress {
+    width: 250px;
+  }
+  
+  .hackLogs {
+    width: 280px;
+    padding: 10px;
+  }
+  
+  .logLine {
+    font-size: 8px;
+  }
+  
+  /* Рамки под маленький телефон — 50% высоты экрана */
+  .horizontalMatrixWrapper {
+    height: min(350px, 50vh);
+  }
+  
+  .accessGranted {
+    font-size: 9px;
+    letter-spacing: 4px;
+    margin-bottom: 25px;
+  }
+  
+  .enterButton {
+    padding: 10px 20px;
+    font-size: 11px;
+    letter-spacing: 3px;
+  }
+  
+  .progressText {
+    font-size: 8px;
+    letter-spacing: 2px;
+  }
+}
+
+@media (max-width: 360px) {
+  .hackProgress {
+    width: 220px;
+  }
+  
+  .hackLogs {
+    width: 260px;
+  }
+  
+  /* Рамки под очень маленький телефон */
+  .horizontalMatrixWrapper {
+    height: min(300px, 45vh);
+  }
+  
+  .accessGranted {
+    font-size: 8px;
+    letter-spacing: 3px;
+  }
+  
+  .enterButton {
+    padding: 8px 16px;
+    font-size: 10px;
+    letter-spacing: 2px;
+  }
+}
+
+/* Ландшафтная ориентация */
+@media (max-height: 600px) and (orientation: landscape) {
+  .horizontalMatrixWrapper {
+    height: min(300px, 70vh);
+  }
+  
+  .hackLogs {
+    max-height: 200px;
+    overflow-y: auto;
+  }
+  
+  .enterSection {
+    transform: translate(-50%, -50%) scale(0.9);
+  }
+}
+/* Фон с плавным параллаксом */
+.cyberpunkBg {
+  position: absolute;
+  top: -2%;
+  left: -2%;
+  right: -2%;
+  bottom: -2%;
+  background-image: url('/image/dlya-vzlom/city.jpg');
+  background-size: cover;
+  background-position: center;
+  filter: brightness(0.2) contrast(1.1);
+  z-index: 0;
+  transition: transform 0.15s ease-out;
+  will-change: transform;
+}

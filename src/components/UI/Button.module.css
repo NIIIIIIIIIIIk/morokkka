@@ -1,0 +1,81 @@
+.button {
+  font-family: var(--font-mono);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.button::before {
+  content: '[';
+  margin-right: 8px;
+  opacity: 0.5;
+}
+
+.button::after {
+  content: ']';
+  margin-left: 8px;
+  opacity: 0.5;
+}
+
+.primary {
+  background: transparent;
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.primary:hover {
+  background: var(--accent);
+  color: var(--text-primary);
+}
+
+.secondary {
+  background: transparent;
+  border-color: var(--border);
+  color: var(--text-secondary);
+}
+
+.secondary:hover {
+  border-color: var(--text-primary);
+  color: var(--text-primary);
+}
+
+.danger {
+  background: transparent;
+  border-color: var(--accent);
+  color: var(--text-secondary);
+}
+
+.danger:hover {
+  background: var(--accent);
+  color: var(--text-primary);
+}
+
+.ghost {
+  background: transparent;
+  border-color: transparent;
+  color: var(--text-muted);
+}
+
+.ghost:hover {
+  color: var(--text-primary);
+}
+
+.small {
+  padding: 4px 12px;
+  font-size: 12px;
+}
+
+.medium {
+  padding: 12px 24px;
+  font-size: 14px;
+}
+
+.large {
+  padding: 16px 32px;
+  font-size: 18px;
+}

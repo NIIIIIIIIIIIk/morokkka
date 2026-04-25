@@ -1,0 +1,209 @@
+.generateButton {
+  background: transparent;
+  border: 1px solid var(--accent);
+  color: var(--accent);
+  padding: 8px 16px;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  position: relative;
+  overflow: hidden;
+}
+
+.generateButton:hover:not(:disabled) {
+  background: var(--accent);
+  color: var(--text-primary);
+  transform: scale(1.05);
+}
+
+.generateButton.generating {
+  border-color: var(--warning);
+  color: var(--warning);
+  cursor: wait;
+}
+
+.diceEmoji {
+  font-size: 16px;
+  display: inline-block;
+}
+
+.generateButton.generating .diceEmoji {
+  animation: roll 0.5s linear infinite;
+}
+
+.buttonText {
+  font-weight: bold;
+}
+
+/* Preview Modal */
+.previewOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.8);
+  backdrop-filter: blur(5px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10000;
+  animation: fadeIn 0.2s ease;
+}
+
+.previewModal {
+  background: var(--bg-secondary);
+  border: 2px solid var(--accent);
+  padding: 32px;
+  max-width: 500px;
+  width: 90%;
+  animation: slideUp 0.3s ease;
+  box-shadow: 0 20px 40px rgba(229, 9, 20, 0.2);
+}
+
+.previewHeader {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 24px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--border);
+}
+
+.previewEmoji {
+  font-size: 40px;
+  animation: bounce 1s ease-in-out infinite;
+}
+
+.previewTitle {
+  font-size: 20px;
+  color: var(--text-primary);
+  font-weight: bold;
+  margin: 0;
+  flex: 1;
+}
+
+.previewBody {
+  margin-bottom: 24px;
+}
+
+.previewRow {
+  display: flex;
+  margin-bottom: 16px;
+  line-height: 1.5;
+}
+
+.previewLabel {
+  width: 90px;
+  color: var(--text-muted);
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.previewValue {
+  flex: 1;
+  color: var(--text-primary);
+  font-size: 14px;
+}
+
+.previewValue.vibe {
+  text-transform: capitalize;
+  color: var(--accent);
+}
+
+.previewActions {
+  display: flex;
+  gap: 16px;
+  justify-content: center;
+  margin-top: 24px;
+}
+
+.previewHint {
+  margin-top: 20px;
+  text-align: center;
+  font-size: 11px;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+/* Анимации */
+@keyframes roll {
+  0% {
+    transform: rotate(0deg);
+  }
+  25% {
+    transform: rotate(30deg);
+  }
+  75% {
+    transform: rotate(-30deg);
+  }
+  100% {
+    transform: rotate(0deg);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(30px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes bounce {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-5px);
+  }
+}
+
+/* Адаптивность */
+@media (max-width: 600px) {
+  .generateButton {
+    padding: 6px 12px;
+    font-size: 11px;
+  }
+  
+  .previewModal {
+    padding: 20px;
+  }
+  
+  .previewTitle {
+    font-size: 16px;
+  }
+  
+  .previewRow {
+    flex-direction: column;
+    gap: 4px;
+  }
+  
+  .previewLabel {
+    width: auto;
+  }
+  
+  .previewActions {
+    flex-direction: column;
+  }
+}

@@ -1,0 +1,205 @@
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.95);
+  backdrop-filter: blur(10px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10001;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  cursor: pointer;
+}
+
+.overlay.visible {
+  opacity: 1;
+}
+
+.overlay.leaving {
+  opacity: 0;
+}
+
+.modal {
+  max-width: 500px;
+  width: 90%;
+  text-align: center;
+  transform: scale(0.8);
+  transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.visible .modal {
+  transform: scale(1);
+}
+
+/* Текстовая анимация вместо изображения */
+.textAnimation {
+  background: var(--bg-secondary);
+  border: 3px solid var(--accent);
+  padding: 60px 40px;
+  margin-bottom: 30px;
+  box-shadow: 0 20px 60px rgba(229, 9, 20, 0.3);
+  position: relative;
+  overflow: hidden;
+}
+
+.textAnimation::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: repeating-linear-gradient(
+    45deg,
+    transparent,
+    transparent 10px,
+    rgba(229, 9, 20, 0.03) 10px,
+    rgba(229, 9, 20, 0.03) 20px
+  );
+  animation: moveStripes 10s linear infinite;
+}
+
+.clapperboardLarge {
+  font-size: 80px;
+  animation: clap 1s ease-in-out infinite;
+  margin-bottom: 20px;
+}
+
+.sceneText {
+  font-size: 36px;
+  font-weight: bold;
+  color: var(--text-primary);
+  font-family: var(--font-mono);
+  letter-spacing: 4px;
+  margin-bottom: 10px;
+}
+
+.takeText {
+  font-size: 24px;
+  color: var(--accent);
+  font-family: var(--font-mono);
+  margin-bottom: 20px;
+}
+
+.actionText {
+  font-size: 48px;
+  font-weight: bold;
+  color: var(--success);
+  text-transform: uppercase;
+  letter-spacing: 8px;
+  animation: pulse 1s ease-in-out infinite;
+}
+
+.message {
+  font-size: 32px;
+  font-weight: bold;
+  color: var(--success);
+  text-transform: uppercase;
+  letter-spacing: 4px;
+  margin-bottom: 16px;
+  font-family: var(--font-mono);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+}
+
+.emoji {
+  font-size: 36px;
+  animation: bounce 1s ease-in-out infinite;
+}
+
+.emoji:first-child {
+  animation-delay: 0s;
+}
+
+.emoji:last-child {
+  animation-delay: 0.5s;
+}
+
+.subtitle {
+  font-size: 16px;
+  color: var(--text-secondary);
+  margin-bottom: 30px;
+  font-style: italic;
+}
+
+.hint {
+  font-size: 12px;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  opacity: 0.7;
+}
+
+@keyframes clap {
+  0%, 100% {
+    transform: rotate(0deg) scale(1);
+  }
+  25% {
+    transform: rotate(-10deg) scale(1.1);
+  }
+  75% {
+    transform: rotate(10deg) scale(1.1);
+  }
+}
+
+@keyframes moveStripes {
+  0% {
+    transform: translate(0, 0);
+  }
+  100% {
+    transform: translate(40px, 40px);
+  }
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+    text-shadow: 0 0 20px rgba(0, 200, 83, 0.5);
+  }
+  50% {
+    opacity: 0.8;
+    text-shadow: 0 0 40px rgba(0, 200, 83, 0.8);
+  }
+}
+
+@keyframes bounce {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+@media (max-width: 600px) {
+  .textAnimation {
+    padding: 40px 20px;
+  }
+  
+  .clapperboardLarge {
+    font-size: 60px;
+  }
+  
+  .sceneText {
+    font-size: 24px;
+  }
+  
+  .actionText {
+    font-size: 32px;
+  }
+  
+  .message {
+    font-size: 24px;
+    gap: 10px;
+  }
+  
+  .emoji {
+    font-size: 24px;
+  }
+}

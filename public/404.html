@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CALL_SHEET - Redirecting...</title>
+  <script>
+    // Перенаправление для SPA на GitHub Pages
+    const path = window.location.pathname;
+    const repoName = 'morokkka';
+    
+    if (path.includes(repoName)) {
+      const cleanPath = path.split(repoName)[1] || '/';
+      window.location.href = `/${repoName}/?p=${encodeURIComponent(cleanPath)}`;
+    } else {
+      window.location.href = `/${repoName}/`;
+    }
+  </script>
+</head>
+<body>
+  <p>Redirecting...</p>
+</body>
+</html>

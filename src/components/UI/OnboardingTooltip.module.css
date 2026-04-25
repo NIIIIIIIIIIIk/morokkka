@@ -1,0 +1,155 @@
+.tooltip {
+  position: absolute;
+  background: var(--bg-secondary);
+  border: 1px solid var(--accent);
+  padding: 20px;
+  min-width: 320px;
+  max-width: 400px;
+  z-index: 9998;
+  opacity: 0;
+  transform: translateY(-10px);
+  transition: all 0.3s ease;
+  pointer-events: none;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+}
+
+.tooltip.visible {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+
+.tooltip.bottom {
+  transform: translateY(10px);
+}
+
+.tooltip.bottom.visible {
+  transform: translateY(0);
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+
+.title {
+  font-weight: bold;
+  color: var(--accent);
+  text-transform: uppercase;
+  font-size: 14px;
+  letter-spacing: 1px;
+}
+
+.counter {
+  color: var(--text-muted);
+  font-size: 12px;
+}
+
+.content {
+  color: var(--text-primary);
+  line-height: 1.6;
+  margin-bottom: 20px;
+  font-size: 14px;
+}
+
+.actions {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.skipButton {
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  text-transform: uppercase;
+  padding: 8px 16px;
+  transition: color 0.2s;
+}
+
+.skipButton:hover {
+  color: var(--text-secondary);
+}
+
+.nextButton {
+  background: transparent;
+  border: 1px solid var(--accent);
+  color: var(--accent);
+  cursor: pointer;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  text-transform: uppercase;
+  padding: 8px 16px;
+  transition: all 0.2s;
+}
+
+.nextButton:hover {
+  background: var(--accent);
+  color: var(--text-primary);
+}
+
+.arrow {
+  position: absolute;
+  left: 20px;
+  width: 12px;
+  height: 12px;
+  background: var(--bg-secondary);
+  border-left: 1px solid var(--accent);
+  border-top: 1px solid var(--accent);
+  transform: rotate(45deg);
+}
+
+.tooltip.top .arrow {
+  top: -6px;
+  border-left: 1px solid var(--accent);
+  border-top: 1px solid var(--accent);
+  border-right: none;
+  border-bottom: none;
+}
+
+.tooltip.bottom .arrow {
+  bottom: -6px;
+  transform: rotate(225deg);
+  border-right: 1px solid var(--accent);
+  border-bottom: 1px solid var(--accent);
+  border-left: none;
+  border-top: none;
+}
+
+.highlighted {
+  position: relative;
+  z-index: 9999;
+  box-shadow: 0 0 0 4px rgba(229, 9, 20, 0.3);
+  transition: box-shadow 0.3s ease;
+  animation: pulse-highlight 2s ease-in-out infinite;
+}
+
+@keyframes pulse-highlight {
+  0%, 100% {
+    box-shadow: 0 0 0 4px rgba(229, 9, 20, 0.3);
+  }
+  50% {
+    box-shadow: 0 0 0 8px rgba(229, 9, 20, 0.1);
+  }
+}
+
+@media (max-width: 600px) {
+  .tooltip {
+    min-width: auto;
+    max-width: calc(100vw - 40px);
+    margin: 0 20px;
+  }
+}
+
+.highlighted {
+  position: relative;
+  z-index: 9999;
+  box-shadow: 0 0 0 4px rgba(229, 9, 20, 0.3);
+  transition: box-shadow 0.3s ease;
+}

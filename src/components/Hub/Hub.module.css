@@ -1,0 +1,655 @@
+.hub {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: #08060D;
+  overflow: hidden;
+  opacity: 0;
+  transition: opacity 1.2s cubic-bezier(0.4, 0, 0.2, 1);
+  cursor: default;
+}
+
+.hub.loaded {
+  opacity: 1;
+}
+
+.hub.exiting {
+  animation: hubExit 1s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+@keyframes hubExit {
+  0% { opacity: 1; filter: blur(0); }
+  100% { opacity: 0; filter: blur(10px); }
+}
+
+/* ===== СТАТИЧНЫЙ ФОН ===== */
+.cardBackground {
+  position: absolute;
+  top: -5%;
+  left: -5%;
+  right: -5%;
+  bottom: -5%;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  will-change: transform, filter;
+  z-index: 0;
+}
+
+/* ===== СВЕТ СВЕРХУ ===== */
+.topLight {
+  position: absolute;
+  top: -10%;
+  left: -10%;
+  right: -10%;
+  bottom: -10%;
+  background-size: cover;
+  background-position: center top;
+  background-repeat: no-repeat;
+  pointer-events: none;
+  z-index: 1;
+  mix-blend-mode: screen;
+  will-change: opacity;
+}
+
+/* ===== СВЕЧЕНИЕ СНИЗУ ===== */
+.bottomGlow {
+  position: absolute;
+  bottom: -20%;
+  left: -20%;
+  right: -20%;
+  height: 70%;
+  background-size: contain;
+  background-position: center bottom;
+  background-repeat: no-repeat;
+  pointer-events: none;
+  z-index: 1;
+  mix-blend-mode: screen;
+  will-change: transform, opacity;
+}
+
+/* ===== ЦЕНТРАЛЬНЫЙ КОНТЕНТ ===== */
+.content {
+  position: relative;
+  z-index: 10;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.centerWrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 40px;
+  padding: 40px;
+  animation: contentFadeIn 1.5s cubic-bezier(0.4, 0, 0.2, 1);
+  width: 100%;
+  max-width: 500px;
+  margin: 0 auto;
+}
+
+@keyframes contentFadeIn {
+  0% { opacity: 0; transform: scale(0.98); }
+  100% { opacity: 1; transform: scale(1); }
+}
+
+/* ===== ЗАГОЛОВОК ===== */
+.header {
+  text-align: center;
+  margin-bottom: 20px;
+  width: 100%;
+}
+
+.logoWrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 25px;
+}
+
+.logoLine {
+  width: 50px;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(197, 146, 255, 0.4), transparent);
+}
+
+.logoText {
+  color: rgba(197, 146, 255, 0.5);
+  font-size: 12px;
+  font-weight: 300;
+  letter-spacing: 10px;
+  text-transform: uppercase;
+  font-family: 'Courier New', monospace;
+  text-align: center;
+}
+
+/* ===== SWIPER СТИЛИ ===== */
+.swiperContainer {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px 0;
+}
+
+.swiper {
+  width: 100%;
+  max-width: 320px;
+  height: 380px;
+  overflow: visible !important;
+  margin: 0 auto;
+}
+
+.swiper-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.swiper-slide {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  background: transparent !important;
+  width: auto !important;
+}
+
+.swiper-slide-shadow,
+.swiper-slide-shadow-left,
+.swiper-slide-shadow-right,
+.swiper-slide-shadow-top,
+.swiper-slide-shadow-bottom,
+.swiper-3d .swiper-slide-shadow,
+.swiper-3d .swiper-slide-shadow-left,
+.swiper-3d .swiper-slide-shadow-right {
+  display: none !important;
+  opacity: 0 !important;
+  background: transparent !important;
+}
+
+/* ===== КАРТОЧКИ ===== */
+.card {
+  position: relative;
+  width: 280px;
+  height: 340px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  background: #100D23;
+  border: 1px solid rgba(197, 146, 255, 0.15);
+  border-radius: 4px;
+  cursor: pointer;
+  overflow: hidden;
+  transform-style: preserve-3d;
+  will-change: transform;
+  margin: 0 auto;
+}
+
+.card::before,
+.card::after {
+  display: none;
+}
+
+.card:hover {
+  border-color: var(--card-color);
+  background: #1a1433;
+}
+
+.cardActive {
+  border-color: var(--card-color);
+  background: #1a1433;
+  box-shadow: 
+    0 20px 50px rgba(0, 0, 0, 0.5),
+    0 0 40px rgba(var(--card-color), 0.1);
+}
+
+.cardIcon {
+  position: relative;
+  z-index: 10;
+  font-size: 48px;
+  color: var(--card-color);
+  opacity: 0.7;
+  transition: all 0.3s ease;
+  transform-style: preserve-3d;
+  transform: translateZ(15px);
+}
+
+.cardActive .cardIcon {
+  opacity: 1;
+  transform: translateZ(25px) scale(1.05);
+  text-shadow: 0 0 30px var(--card-color);
+}
+
+.cardTitle {
+  position: relative;
+  z-index: 10;
+  color: rgba(255, 255, 255, 0.85);
+  font-size: 22px;
+  font-weight: 300;
+  letter-spacing: 12px;
+  text-transform: uppercase;
+  font-family: 'Courier New', monospace;
+  transition: all 0.3s ease;
+  transform-style: preserve-3d;
+  transform: translateZ(10px);
+  text-align: center;
+}
+
+.cardActive .cardTitle {
+  color: #fff;
+  letter-spacing: 14px;
+  transform: translateZ(20px);
+}
+
+.cardDescription {
+  position: relative;
+  z-index: 10;
+  color: rgba(136, 119, 170, 0.6);
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 3px;
+  transition: all 0.3s ease;
+  transform-style: preserve-3d;
+  transform: translateZ(8px);
+  text-align: center;
+}
+
+.cardActive .cardDescription {
+  color: rgba(197, 146, 255, 0.6);
+  transform: translateZ(15px);
+}
+
+.cardStatus {
+  position: relative;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transform-style: preserve-3d;
+  transform: translateZ(5px);
+}
+
+.statusIndicator {
+  display: block;
+  width: 5px;
+  height: 5px;
+  border-radius: 0;
+  transition: all 0.3s;
+}
+
+.statusActive {
+  background: #00FF9C;
+  box-shadow: 0 0 15px #00FF9C;
+  animation: statusPulse 2s infinite;
+}
+
+.statusLocked {
+  background: #FFD700;
+}
+
+.statusComing {
+  background: #8877aa;
+  opacity: 0.5;
+}
+
+.statusText {
+  color: rgba(136, 119, 170, 0.5);
+  font-size: 8px;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+}
+
+@keyframes statusPulse {
+  0%, 100% { opacity: 0.7; transform: scale(1); }
+  50% { opacity: 1; transform: scale(1.3); }
+}
+
+.cardGlow {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: radial-gradient(
+    circle at center,
+    var(--card-color),
+    transparent 70%
+  );
+  opacity: 0;
+  transition: opacity 0.4s;
+  pointer-events: none;
+  z-index: 0;
+  border-radius: 4px;
+}
+
+.cardActive .cardGlow {
+  opacity: 0.06;
+}
+
+.cardBorder {
+  position: absolute;
+  top: -1px;
+  left: -1px;
+  right: -1px;
+  bottom: -1px;
+  border: 1px solid transparent;
+  border-radius: 4px;
+  pointer-events: none;
+  transition: border-color 0.3s;
+  z-index: 20;
+}
+
+.cardActive .cardBorder {
+  border-color: var(--card-color);
+  animation: borderPulse 3s infinite;
+}
+
+@keyframes borderPulse {
+  0%, 100% { opacity: 0.3; }
+  50% { opacity: 0.8; }
+}
+
+/* ===== ИНДИКАТОР СЛАЙДОВ ===== */
+.slideIndicator {
+  display: flex;
+  gap: 16px;
+  justify-content: center;
+  align-items: center;
+  margin-top: 10px;
+  width: 100%;
+}
+
+.indicatorDot {
+  width: 4px;
+  height: 4px;
+  background: rgba(197, 146, 255, 0.2);
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.indicatorDot:hover {
+  background: rgba(197, 146, 255, 0.5);
+}
+
+.indicatorActive {
+  width: 20px;
+  background: #C592FF;
+  box-shadow: 0 0 15px #C592FF;
+}
+
+/* ===== ФУТЕР ===== */
+.footer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 40px;
+  width: 100%;
+}
+
+.hint {
+  color: rgba(136, 119, 170, 0.35);
+  font-size: 9px;
+  text-transform: uppercase;
+  letter-spacing: 3px;
+  transition: all 0.3s;
+  text-align: center;
+}
+
+.swipeHint {
+  color: rgba(136, 119, 170, 0.2);
+  font-size: 8px;
+  text-transform: uppercase;
+  letter-spacing: 4px;
+  animation: hintFade 3s infinite;
+  text-align: center;
+}
+
+@keyframes hintFade {
+  0%, 100% { opacity: 0.15; }
+  50% { opacity: 0.4; }
+}
+
+/* ===== ОВЕРЛЕИ ===== */
+.overlays {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  pointer-events: none;
+  z-index: 20;
+}
+
+.vignette {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: radial-gradient(
+    circle at center,
+    transparent 40%,
+    rgba(0, 0, 0, 0.3) 100%
+  );
+  opacity: 0.5;
+}
+
+.scanline {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent 0px,
+    rgba(0, 0, 0, 0.01) 1px,
+    transparent 2px
+  );
+  opacity: 0.2;
+}
+
+/* ===== ИНДИКАТОР ===== */
+.depthIndicator {
+  position: absolute;
+  bottom: 20px;
+  right: 25px;
+  z-index: 30;
+  pointer-events: none;
+}
+
+.depthValue {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: rgba(136, 119, 170, 0.12);
+  font-size: 9px;
+  font-family: 'Courier New', monospace;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+}
+
+.separator {
+  opacity: 0.3;
+}
+
+/* ===== МОБИЛЬНАЯ АДАПТАЦИЯ ===== */
+@media (max-width: 1024px) and (min-width: 769px) {
+  .card {
+    width: 260px;
+    height: 320px;
+  }
+  
+  .swiper {
+    height: 360px;
+    max-width: 300px;
+  }
+  
+  .centerWrapper {
+    gap: 35px;
+    padding: 30px;
+  }
+}
+
+@media (max-width: 768px) {
+  .centerWrapper {
+    gap: 25px;
+    padding: 20px;
+  }
+  
+  .logoWrapper {
+    gap: 15px;
+  }
+  
+  .logoLine {
+    width: 30px;
+  }
+  
+  .logoText {
+    font-size: 10px;
+    letter-spacing: 6px;
+  }
+  
+  .swiper {
+    height: 360px;
+    max-width: 280px;
+  }
+  
+  .card {
+    width: 240px;
+    height: 320px;
+    gap: 15px;
+  }
+  
+  .cardIcon {
+    font-size: 42px;
+  }
+  
+  .cardTitle {
+    font-size: 18px;
+    letter-spacing: 8px;
+  }
+  
+  .slideIndicator {
+    gap: 12px;
+  }
+  
+  .indicatorActive {
+    width: 16px;
+  }
+  
+  /* Отключаем 3D на мобильных */
+  .card {
+    transform-style: flat;
+  }
+  
+  .cardActive .cardIcon,
+  .cardActive .cardTitle,
+  .cardActive .cardDescription,
+  .cardStatus {
+    transform: none !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .centerWrapper {
+    gap: 20px;
+    padding: 15px;
+  }
+  
+  .logoWrapper {
+    gap: 10px;
+  }
+  
+  .logoLine {
+    width: 20px;
+  }
+  
+  .logoText {
+    font-size: 9px;
+    letter-spacing: 4px;
+  }
+  
+  .swiper {
+    height: 340px;
+    max-width: 240px;
+  }
+  
+  .card {
+    width: 200px;
+    height: 280px;
+    gap: 12px;
+  }
+  
+  .cardIcon {
+    font-size: 36px;
+  }
+  
+  .cardTitle {
+    font-size: 16px;
+    letter-spacing: 6px;
+  }
+  
+  .slideIndicator {
+    gap: 10px;
+  }
+  
+  .indicatorActive {
+    width: 14px;
+  }
+}
+
+@media (max-width: 360px) {
+  .swiper {
+    max-width: 220px;
+  }
+  
+  .card {
+    width: 180px;
+    height: 260px;
+  }
+  
+  .cardIcon {
+    font-size: 32px;
+  }
+  
+  .cardTitle {
+    font-size: 14px;
+    letter-spacing: 4px;
+  }
+  
+  .logoText {
+    font-size: 8px;
+    letter-spacing: 3px;
+  }
+}
+
+@media (max-height: 600px) and (orientation: landscape) {
+  .centerWrapper {
+    gap: 15px;
+    padding: 10px;
+  }
+  
+  .swiper {
+    height: 280px;
+  }
+  
+  .card {
+    width: 220px;
+    height: 260px;
+  }
+  
+  .footer {
+    min-height: 25px;
+  }
+}

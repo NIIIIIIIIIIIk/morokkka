@@ -1,0 +1,92 @@
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.85);
+  backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10000;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  cursor: pointer;
+}
+
+.overlay.visible {
+  opacity: 1;
+}
+
+.overlay.leaving {
+  opacity: 0;
+}
+
+.modal {
+  background: var(--bg-secondary);
+  border: 2px solid var(--accent);
+  padding: 48px 64px;
+  max-width: 500px;
+  text-align: center;
+  transform: scale(0.9);
+  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  box-shadow: 0 20px 60px rgba(229, 9, 20, 0.3);
+}
+
+.visible .modal {
+  transform: scale(1);
+}
+
+.emoji {
+  font-size: 64px;
+  margin-bottom: 24px;
+  animation: pulse 2s ease-in-out infinite;
+}
+
+.message {
+  font-size: 20px;
+  line-height: 1.6;
+  color: var(--text-primary);
+  margin-bottom: 24px;
+  font-family: var(--font-mono);
+}
+
+.signature {
+  font-size: 14px;
+  color: var(--accent);
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  border-top: 1px solid var(--border);
+  padding-top: 20px;
+  margin-top: 20px;
+}
+
+.hint {
+  margin-top: 24px;
+  font-size: 11px;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  opacity: 0.6;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.1);
+  }
+}
+
+@media (max-width: 600px) {
+  .modal {
+    padding: 32px 24px;
+    margin: 20px;
+  }
+  
+  .message {
+    font-size: 16px;
+  }
+}
