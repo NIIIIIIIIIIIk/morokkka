@@ -59,8 +59,8 @@ export const AddEventForm: React.FC<AddEventFormProps> = ({ onAdd }) => {
       <div className={styles.formGroup}>
         <label>ADDED BY:</label>
         <select value={formData.addedBy} onChange={(e) => setFormData({ ...formData, addedBy: e.target.value as 'NIK' | 'ELINA' })}>
-          <option value="NIK">NIK (DIR)</option>
-          <option value="ELINA">ELINA (PROD)</option>
+          <option value="NIK">NIK</option>
+          <option value="ELINA">ELINA</option>
         </select>
       </div>
       <div className={styles.formActions}>
