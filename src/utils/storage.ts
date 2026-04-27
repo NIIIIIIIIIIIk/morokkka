@@ -1,20 +1,28 @@
 import { Event, Comment, AppState } from '../types';
 
-const SUPABASE_URL = 'https://corsproxy.io/?url=https://czskbxqkyggjbzuyedjm.supabase.co';
+const SUPABASE_URL = 'https://czskbxqkyggjbzuyedjm.supabase.co/rest/v1';
 const SUPABASE_KEY = 'sb_publishable_DLRSW3kv4o9QoTVXjGVnYg_iWMNSCmX';
 
-const headers = {
-    'Content-Type': 'application/json',
-    'apikey': SUPABASE_KEY,
-    'Authorization': `Bearer ${SUPABASE_KEY}`
-};
+// Прокси URL с ключом в параметрах
+function api(path: string, options: RequestInit = {}) {
+    const url = `https://corsproxy.io/?${encodeURIComponent(
+        `${SUPABASE_URL}${path}?apikey=${SUPABASE_KEY}`
+    )}`;
+    return fetch(url, {
+        ...options,
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${SUPABASE_KEY}`,
+            ...options.headers
+        }
+    });
+}
 
-// ============ СОБЫТИЯ ============
 export const loadState = async (): Promise<AppState> => {
     try {
         const [eventsRes, commentsRes] = await Promise.all([
-            fetch(`${SUPABASE_URL}/rest/v1/events?order=created_at.desc`, { headers }),
-            fetch(`${SUPABASE_URL}/rest/v1/comments?order=created_at`, { headers })
+            api('/events?order=created_at.desc'),
+            api('/comments?order=created_at')
         ]);
         
         const events = await eventsRes.json();
@@ -45,27 +53,27 @@ export const unlockApp = () => localStorage.setItem('call_sheet_unlocked', 'true
 
 export const addEvent = async (event: Omit<Event, 'id' | 'comments'>): Promise<Event> => {
     const newEvent = { ...event, id: Date.now().toString() };
-    await fetch(`${SUPABASE_URL}/rest/v1/events`, {
-        method: 'POST', headers, body: JSON.stringify(newEvent)
+    await api('/events', {
+        method: 'POST',
+        body: JSON.stringify(newEvent)
     });
     return { ...newEvent, comments: [] };
 };
 
 export const deleteEvent = async (id: string): Promise<void> => {
-    await fetch(`${SUPABASE_URL}/rest/v1/events?id=eq.${id}`, {
-        method: 'DELETE', headers
-    });
+    await api(`/events?id=eq.${id}`, { method: 'DELETE' });
 };
 
 export const updateEventStatus = async (id: string, status: Event['status']): Promise<void> => {
-    await fetch(`${SUPABASE_URL}/rest/v1/events?id=eq.${id}`, {
-        method: 'PATCH', headers, body: JSON.stringify({ status })
+    await api(`/events?id=eq.${id}`, {
+        method: 'PATCH',
+        body: JSON.stringify({ status })
     });
 };
 
 export const addComment = async (eventId: string, author: 'NIK' | 'ELINA', text: string): Promise<void> => {
-    await fetch(`${SUPABASE_URL}/rest/v1/comments`, {
-        method: 'POST', headers,
+    await api('/comments', {
+        method: 'POST',
         body: JSON.stringify({
             id: Date.now().toString(),
             event_id: eventId,
