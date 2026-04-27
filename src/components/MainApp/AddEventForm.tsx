@@ -15,7 +15,7 @@ export const AddEventForm: React.FC<AddEventFormProps> = ({ onAdd }) => {
     scene: '',
     location: '',
     notes: '',
-    status: 'ОЖИДАЕТ' as Event['status'],
+    status: 'PENDING' as Event['status']
     addedBy: 'NIK' as 'NIK' | 'ELINA'
   });
 
