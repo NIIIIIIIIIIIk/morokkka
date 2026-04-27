@@ -1,4 +1,4 @@
-var API_URL = 'http://nikitv86.beget.tech/api.php';
+var API_URL = 'https://nikitv86.beget.tech/api.php';
 
 (function() {
     if (window.location.pathname.includes('p4n3l')) return;
