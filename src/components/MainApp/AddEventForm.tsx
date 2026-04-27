@@ -19,22 +19,22 @@ export const AddEventForm: React.FC<AddEventFormProps> = ({ onAdd }) => {
     addedBy: 'NIK' as 'NIK' | 'ELINA'
   });
 
-  const handleSubmit = (e: React.FormEvent) => {
+ const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (formData.scene && formData.location) {
-      addEvent(formData);
-      setFormData({
-        date: '',
-        scene: '',
-        location: '',
-        notes: '',
-        status: 'ОЖИДАЕТ',
-        addedBy: 'NIK'
-      });
-      setIsOpen(false);
-      onAdd();
+        const newEvent = await addEvent(formData);
+        setFormData({
+            date: '',
+            scene: '',
+            location: '',
+            notes: '',
+            status: 'PENDING',
+            addedBy: 'NICK'
+        });
+        setIsOpen(false);
+        onAdd(newEvent); // Передаём созданное событие
     }
-  };
+};
 
   if (!isOpen) {
     return (
