@@ -119,7 +119,7 @@ export const MainApp: React.FC = () => {
   const handleAutoGenerate = async (generatedEvent: Omit<Event, 'id' | 'comments'>) => {
     const newEvent = await addEvent({
       ...generatedEvent,
-      addedBy: 'NICK'
+      addedBy: 'NIK'
     });
     handleUpdate();
     setToast({ message: `$ generated`, type: 'success' });
