@@ -1,65 +1,80 @@
 import { Event, Comment, AppState } from '../types';
 
-const STORAGE_KEY = 'call_sheet_state';
+const SUPABASE_URL = 'https://czskbxqkyggjbzuyedjm.supabase.co';
+const SUPABASE_KEY = 'sb_publishable_DLRSW3kv4o9QoTVXjGVnYg_iWMNSCmX';
 
+const headers = {
+    'Content-Type': 'application/json',
+    'apikey': SUPABASE_KEY,
+    'Authorization': `Bearer ${SUPABASE_KEY}`
+};
+
+// ============ СОБЫТИЯ ============
 export const loadState = async (): Promise<AppState> => {
-    const saved = localStorage.getItem(STORAGE_KEY);
-    if (saved) {
-        try {
-            return JSON.parse(saved);
-        } catch {}
+    try {
+        const [eventsRes, commentsRes] = await Promise.all([
+            fetch(`${SUPABASE_URL}/rest/v1/events?order=created_at.desc`, { headers }),
+            fetch(`${SUPABASE_URL}/rest/v1/comments?order=created_at`, { headers })
+        ]);
+        
+        const events = await eventsRes.json();
+        const comments = await commentsRes.json();
+        
+        const eventsWithComments = events.map((e: any) => ({
+            ...e,
+            comments: comments
+                .filter((c: any) => c.event_id === e.id)
+                .map((c: any) => ({
+                    id: c.id,
+                    author: c.author,
+                    text: c.text,
+                    timestamp: new Date(c.created_at).getTime()
+                }))
+        }));
+        
+        return {
+            isUnlocked: localStorage.getItem('call_sheet_unlocked') === 'true',
+            events: eventsWithComments
+        };
+    } catch {
+        return { isUnlocked: false, events: [] };
     }
-    return { 
-        isUnlocked: localStorage.getItem('call_sheet_unlocked') === 'true', 
-        events: [] 
-    };
 };
 
-export const saveState = (state: AppState): void => {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
-};
-
-export const unlockApp = (): void => {
-    localStorage.setItem('call_sheet_unlocked', 'true');
-};
+export const unlockApp = () => localStorage.setItem('call_sheet_unlocked', 'true');
 
 export const addEvent = async (event: Omit<Event, 'id' | 'comments'>): Promise<Event> => {
-    const state = await loadState();
-    const newEvent: Event = {
-        ...event,
-        id: Date.now().toString(),
-        comments: []
-    };
-    state.events.push(newEvent);
-    saveState(state);
-    return newEvent;
+    const newEvent = { ...event, id: Date.now().toString() };
+    await fetch(`${SUPABASE_URL}/rest/v1/events`, {
+        method: 'POST', headers, body: JSON.stringify(newEvent)
+    });
+    return { ...newEvent, comments: [] };
 };
 
 export const deleteEvent = async (id: string): Promise<void> => {
-    const state = await loadState();
-    state.events = state.events.filter(e => e.id !== id);
-    saveState(state);
+    await fetch(`${SUPABASE_URL}/rest/v1/events?id=eq.${id}`, {
+        method: 'DELETE', headers
+    });
 };
 
 export const updateEventStatus = async (id: string, status: Event['status']): Promise<void> => {
-    const state = await loadState();
-    const event = state.events.find(e => e.id === id);
-    if (event) {
-        event.status = status;
-        saveState(state);
-    }
+    await fetch(`${SUPABASE_URL}/rest/v1/events?id=eq.${id}`, {
+        method: 'PATCH', headers, body: JSON.stringify({ status })
+    });
 };
 
 export const addComment = async (eventId: string, author: 'NIK' | 'ELINA', text: string): Promise<void> => {
-    const state = await loadState();
-    const event = state.events.find(e => e.id === eventId);
-    if (event) {
-        event.comments.push({
+    await fetch(`${SUPABASE_URL}/rest/v1/comments`, {
+        method: 'POST', headers,
+        body: JSON.stringify({
             id: Date.now().toString(),
+            event_id: eventId,
             author,
-            text,
-            timestamp: Date.now()
-        });
-        saveState(state);
-    }
+            text
+        })
+    });
+};
+
+export const saveState = async (state: AppState): Promise<void> => {
+    localStorage.setItem('call_sheet_unlocked', String(state.isUnlocked));
 };
