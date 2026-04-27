@@ -23,7 +23,7 @@ const [formData, setFormData] = useState({
     e.preventDefault();
     if (formData.scene && formData.location) {
       const newEvent = await addEvent(formData);
-      setFormData({ date: '', scene: '', location: '', notes: '', status: 'ОЖИДАЕТ', addedBy: 'NIK' });
+     setFormData({ date: '', scene: '', location: '', notes: '', status: 'PENDING', addedBy: 'NIK' });
       setIsOpen(false);
       onAdd(newEvent);
     }
