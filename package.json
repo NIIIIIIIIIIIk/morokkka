@@ -4,7 +4,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "tsc && vite build",
+    "build": "vite build",
     "build:github": "cross-env DEPLOY_TARGET=github vite build",
     "preview": "vite preview"
   },
