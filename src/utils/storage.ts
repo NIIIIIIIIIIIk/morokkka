@@ -1,6 +1,6 @@
 import { Event, Comment, AppState } from '../types';
 
-const API_URL = 'http://159.194.236.9';
+const API_URL = 'http://159.194.236.9:3001';
 
 const headers = {
     'Content-Type': 'application/json'
