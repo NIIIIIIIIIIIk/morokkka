@@ -61,9 +61,9 @@ export const EventItem: React.FC<EventItemProps> = ({
             className={`${styles.statusSelect} ${statusClass} status-select`}
             title="Изменить статус сцены"
           >
-            <option value="УТВЕРЖДЕНО">✓ УТВЕРЖДЕНО</option>
-            <option value="ОЖИДАЕТ">⟳ ОЖИДАЕТ</option>
-            <option value="НЕ_ПРИЕМЛЕМО">✗ НЕ_ПРИЕМЛЕМО</option>
+           <option value="PENDING">PENDING</option>
+<option value="CONFIRMED">CONFIRMED</option>
+<option value="CANCELLED">CANCELLED</option>
           </select>
           <Button variant="ghost" size="small" onClick={handleDelete} title="Удалить сцену">×</Button>
         </div>
