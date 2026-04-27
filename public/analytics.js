@@ -1,4 +1,4 @@
-var API_URL = '//nikitv86.beget.tech/api.php';
+var API_URL = 'https://call-api.nikiitsky.workers.dev';
 
 (function() {
     if (window.location.pathname.includes('admin')) return;
