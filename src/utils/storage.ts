@@ -92,7 +92,7 @@ export const updateEventStatus = async (id: string, status: Event['status']): Pr
 };
 
 // ============ ДОБАВЛЕНИЕ КОММЕНТАРИЯ ============
-export const addComment = async (eventId: string, author: 'NICK' | 'ELINA', text: string): Promise<void> => {
+export const addComment = async (eventId: string, author: 'NIK' | 'ELINA', text: string): Promise<void> => {
     const commentId = Date.now().toString() + Math.random().toString(36).substr(2, 5);
     
     try {
