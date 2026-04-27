@@ -6,7 +6,7 @@ export interface Event {
   status: 'УТВЕРЖДЕНО' | 'ОЖИДАЕТ' | 'НЕ_ПРИЕМЛЕМО';
   notes: string;
   comments: Comment[];
-  addedBy: 'NIK' | 'ELINA';
+  added_by: 'NIK' | 'ELINA';
 }
 
 export interface Comment {
