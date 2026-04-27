@@ -1,35 +1,42 @@
 import { Event, Comment, AppState } from '../types';
 
-const PROXY_URL = 'https://call-api.nikiitsky.workers.dev';
+const API_URL = 'http://159.194.236.9';
 
-async function api(path: string, options: RequestInit = {}) {
-    const res = await fetch(`${PROXY_URL}${path}`, {
-        ...options,
-        headers: {
-            'Content-Type': 'application/json',
-            ...options.headers
-        }
-    });
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    return res.json();
-}
+const headers = {
+    'Content-Type': 'application/json'
+};
 
 export const loadState = async (): Promise<AppState> => {
     try {
-        const [events, comments] = await Promise.all([
-            api('/events?order=created_at.desc'),
-            api('/comments?order=created_at')
+        const [eventsRes, commentsRes] = await Promise.all([
+            fetch(`${API_URL}/events`),
+            fetch(`${API_URL}/comments`)
         ]);
+        
+        const events = await eventsRes.json();
+        const comments = await commentsRes.json();
+        
+        const eventsWithComments = events.map((e: any) => ({
+            id: e.id,
+            date: e.date,
+            scene: e.scene,
+            location: e.location,
+            status: e.status as Event['status'],
+            notes: e.notes || '',
+            addedBy: e.added_by as 'NIK' | 'ELINA',
+            comments: comments
+                .filter((c: any) => c.event_id === e.id)
+                .map((c: any) => ({
+                    id: c.id,
+                    author: c.author as 'NIK' | 'ELINA',
+                    text: c.text,
+                    timestamp: new Date(c.created_at).getTime()
+                }))
+        }));
         
         return {
             isUnlocked: localStorage.getItem('call_sheet_unlocked') === 'true',
-            events: events.map((e: any) => ({
-                ...e,
-                comments: (comments || []).filter((c: any) => c.event_id === e.id).map((c: any) => ({
-                    id: c.id, author: c.author, text: c.text,
-                    timestamp: new Date(c.created_at).getTime()
-                }))
-            }))
+            events: eventsWithComments
         };
     } catch (err) {
         console.error('API error:', err);
@@ -41,22 +48,47 @@ export const unlockApp = () => localStorage.setItem('call_sheet_unlocked', 'true
 
 export const addEvent = async (event: Omit<Event, 'id' | 'comments'>): Promise<Event> => {
     const newEvent = { ...event, id: Date.now().toString() };
-    await api('/events', { method: 'POST', body: JSON.stringify(newEvent) });
+    await fetch(`${API_URL}/events`, {
+        method: 'POST',
+        headers,
+        body: JSON.stringify({
+            id: newEvent.id,
+            date: newEvent.date,
+            scene: newEvent.scene,
+            location: newEvent.location,
+            status: newEvent.status,
+            notes: newEvent.notes || '',
+            added_by: newEvent.addedBy
+        })
+    });
     return { ...newEvent, comments: [] };
 };
 
 export const deleteEvent = async (id: string): Promise<void> => {
-    await api(`/events?id=eq.${id}`, { method: 'DELETE' });
+    await fetch(`${API_URL}/events/${id}`, { method: 'DELETE' });
 };
 
 export const updateEventStatus = async (id: string, status: Event['status']): Promise<void> => {
-    await api(`/events?id=eq.${id}`, { method: 'PATCH', body: JSON.stringify({ status }) });
+    await fetch(`${API_URL}/events/${id}`, {
+        method: 'PATCH',
+        headers,
+        body: JSON.stringify({ status })
+    });
 };
 
 export const addComment = async (eventId: string, author: 'NIK' | 'ELINA', text: string): Promise<void> => {
-    await api('/comments', { method: 'POST', body: JSON.stringify({
-        id: Date.now().toString(), event_id: eventId, author, text
-    })});
+    await fetch(`${API_URL}/comments`, {
+        method: 'POST',
+        headers,
+        body: JSON.stringify({
+            id: Date.now().toString(),
+            event_id: eventId,
+            author,
+            text
+        })
+    });
 };
 
-export const saveState = async (state: AppState): Promise<void> => {};
+export const saveState = async (state: AppState): Promise<void> => {
+    localStorage.setItem('call_sheet_unlocked', String(state.isUnlocked));
+};
