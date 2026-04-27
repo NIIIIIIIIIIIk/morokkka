@@ -19,33 +19,17 @@ export const EventItem: React.FC<EventItemProps> = ({
   onAllConfirmed 
 }) => {
   const [showComments, setShowComments] = useState(false);
-  const [reactions, setReactions] = useState<Record<string, boolean>>({});
 
-const handleStatusChange = async (status: Event['status']) => {
+  const handleStatusChange = async (status: Event['status']) => {
     await updateEventStatus(event.id, status);
     onUpdate();
-};
-
-const handleDelete = async () => {
-    if (window.confirm('Cancel this scene?')) {
-        await deleteEvent(event.id);
-        onUpdate();
-    }
-};
-
-  const toggleReaction = (emoji: string) => {
-    setReactions(prev => ({ ...prev, [emoji]: !prev[emoji] }));
+    if (onAllConfirmed) setTimeout(onAllConfirmed, 100);
   };
 
-  const formatDate = (date: string) => {
-    if (date === 'TBD') return 'tbd';
-    try {
-      return new Date(date).toLocaleDateString('ru-RU', { 
-        day: 'numeric', 
-        month: 'short'
-      });
-    } catch {
-      return date;
+  const handleDelete = async () => {
+    if (window.confirm('Cancel this scene? Budget will be reallocated to "Lying on couch".')) {
+      await deleteEvent(event.id);
+      onUpdate();
     }
   };
 
@@ -55,84 +39,61 @@ const handleDelete = async () => {
     'НЕ_ПРИЕМЛЕМО': styles.statusCancelled
   }[event.status];
 
+  const formatDate = (date: string) => {
+    if (date === 'TBD') return 'TBD';
+    try {
+      const d = new Date(date);
+      return d.toLocaleDateString('ru-RU', { day: 'numeric', month: 'long', year: 'numeric' }).replace(' г.', '');
+    } catch { return date; }
+  };
+
   return (
     <div className={styles.eventItem}>
-      <div className={styles.eventSender}>
-        <div className={styles.senderAvatar}>
-          {event.addedBy === 'NIK' ? 'N' : 'E'}
-        </div>
-        <div className={styles.senderInfo}>
-          <span className={styles.senderName}>
-            {event.addedBy === 'NIK' ? 'nik' : 'elina'}
-          </span>
-          <span className={styles.eventTime}>
-            {formatDate(event.date)}
-          </span>
-        </div>
-      </div>
-
       <div className={styles.eventHeader}>
         <div className={styles.eventDate}>
+          <span className={styles.clapboard}>🎬</span>
+          {formatDate(event.date)}
+        </div>
+        <div className={styles.eventActions}>
           <select
             value={event.status}
             onChange={(e) => handleStatusChange(e.target.value as Event['status'])}
-            className={`${styles.statusSelect} ${statusClass}`}
+            className={`${styles.statusSelect} ${statusClass} status-select`}
+            title="Изменить статус сцены"
           >
-            <option value="УТВЕРЖДЕНО">✓</option>
-            <option value="ОЖИДАЕТ">○</option>
-            <option value="ОТМЕНЕНО">✗</option>
+            <option value="УТВЕРЖДЕНО">✓ УТВЕРЖДЕНО</option>
+            <option value="ОЖИДАЕТ">⟳ ОЖИДАЕТ</option>
+            <option value="НЕ_ПРИЕМЛЕМО">✗ НЕ_ПРИЕМЛЕМО</option>
           </select>
-        </div>
-        <div className={styles.eventActions}>
-          <Button variant="ghost" size="small" onClick={handleDelete}>×</Button>
+          <Button variant="ghost" size="small" onClick={handleDelete} title="Удалить сцену">×</Button>
         </div>
       </div>
 
       <div className={styles.eventBody}>
-        <div className={styles.eventScene}>{event.scene}</div>
-        <div className={styles.eventLocation}>{event.location}</div>
+        <div className={styles.eventScene}>
+          <span className={styles.label}>SCENE:</span> {event.scene}
+        </div>
+        <div className={styles.eventLocation}>
+          <span className={styles.label}>LOCATION:</span> {event.location}
+        </div>
         {event.notes && (
-          <div className={styles.eventNotes}>{event.notes}</div>
+          <div className={styles.eventNotes}>
+            <span className={styles.label}>NOTES:</span> {event.notes}
+          </div>
         )}
-      </div>
-
-      <div className={styles.eventReactions}>
-        <span 
-          className={`${styles.reaction} ${reactions['👍'] ? styles.active : ''}`}
-          onClick={() => toggleReaction('👍')}
-        >
-          👍 1
-        </span>
-        <span 
-          className={`${styles.reaction} ${reactions['👀'] ? styles.active : ''}`}
-          onClick={() => toggleReaction('👀')}
-        >
-          👀 1
-        </span>
-        <span 
-          className={`${styles.reaction} ${reactions['🎬'] ? styles.active : ''}`}
-          onClick={() => toggleReaction('🎬')}
-        >
-          🎬 1
-        </span>
+        <div className={styles.eventMeta}>
+          <span className={styles.label}>ADDED BY:</span> {event.addedBy === 'NIK' ? '🎥 DIR' : '📋 PROD'}
+        </div>
       </div>
 
       <div className={styles.eventFooter}>
-        <span 
-          className={styles.replyButton}
-          onClick={() => setShowComments(!showComments)}
-        >
-          {showComments ? '— hide' : `→ ${event.comments.length} replies`}
-        </span>
+        <Button variant="ghost" size="small" onClick={() => setShowComments(!showComments)} className="comment-section">
+          {showComments ? '▼ СКРЫТЬ ЗАМЕТКИ' : `▶ ЗАМЕТКИ (${event.comments.length})`}
+        </Button>
       </div>
 
       {showComments && (
-        <CommentSection
-          eventId={event.id}
-          comments={event.comments}
-          onUpdate={onUpdate}
-          onCommentAdded={onCommentAdded}
-        />
+        <CommentSection eventId={event.id} comments={event.comments} onUpdate={onUpdate} onCommentAdded={onCommentAdded} />
       )}
     </div>
   );
