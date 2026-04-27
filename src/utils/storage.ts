@@ -1,7 +1,7 @@
 import { Event, Comment, AppState } from '../types';
 
 // API для работы с базой данных
-const API_URL = '//nikitv86.beget.tech/api.php';
+const API_URL = 'https://call-api.nikiitsky.workers.dev';
 
 // ============ ЗАГРУЗКА СОСТОЯНИЯ ============
 export const loadState = async (): Promise<AppState> => {
