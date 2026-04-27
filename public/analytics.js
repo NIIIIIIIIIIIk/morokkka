@@ -7,5 +7,5 @@ var API_URL = 'https://call-api.nikiitsky.workers.dev';
         '&browser=' + (/Firefox/i.test(navigator.userAgent) ? 'Firefox' : /Edg/i.test(navigator.userAgent) ? 'Edge' : /Chrome/i.test(navigator.userAgent) ? 'Chrome' : /Safari/i.test(navigator.userAgent) ? 'Safari' : 'Other') +
         '&os=' + (/Windows/i.test(navigator.userAgent) ? 'Windows' : /Mac/i.test(navigator.userAgent) ? 'macOS' : /Linux/i.test(navigator.userAgent) ? 'Linux' : /Android/i.test(navigator.userAgent) ? 'Android' : /iPhone|iPad/i.test(navigator.userAgent) ? 'iOS' : 'Other') +
         '&screen=' + screen.width + 'x' + screen.height + '&lang=' + navigator.language;
-    new Image().src = 'http://nikitv86.beget.tech/api.php?' + params;
+    new Image().src = API_URL + '/?' + params;
 })();
