@@ -21,18 +21,17 @@ export const EventItem: React.FC<EventItemProps> = ({
   const [showComments, setShowComments] = useState(false);
   const [reactions, setReactions] = useState<Record<string, boolean>>({});
 
-  const handleStatusChange = (status: Event['status']) => {
-    updateEventStatus(event.id, status);
+const handleStatusChange = async (status: Event['status']) => {
+    await updateEventStatus(event.id, status);
     onUpdate();
-    if (onAllConfirmed) setTimeout(onAllConfirmed, 100);
-  };
+};
 
-  const handleDelete = () => {
-    if (window.confirm('delete?')) {
-      deleteEvent(event.id);
-      onUpdate();
+const handleDelete = async () => {
+    if (window.confirm('Cancel this scene?')) {
+        await deleteEvent(event.id);
+        onUpdate();
     }
-  };
+};
 
   const toggleReaction = (emoji: string) => {
     setReactions(prev => ({ ...prev, [emoji]: !prev[emoji] }));
