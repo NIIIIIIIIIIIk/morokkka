@@ -16,7 +16,7 @@ export const AddEventForm: React.FC<AddEventFormProps> = ({ onAdd }) => {
     location: '',
     notes: '',
     status: 'PENDING' as Event['status']
-    added_By: 'NIK' as 'NIK' | 'ELINA'
+    added_by: 'NIK' as 'NIK' | 'ELINA'
   });
 
   const handleSubmit = async (e: React.FormEvent) => {
