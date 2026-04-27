@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Event, EasterEgg } from '../../types';
-import { loadState, saveState } from '../../utils/storage';
+import { loadState, saveState, addEvent, deleteEvent, updateEventStatus, addComment, unlockApp } from '../../utils/storage';
 import { checkEasterEgg } from '../../utils/easterEggs';
 import { EventList } from './EventList';
 import { AddEventForm } from './AddEventForm';
@@ -26,6 +26,25 @@ export const MainApp: React.FC = () => {
   const [sessionId] = useState(() => Math.random().toString(36).substring(2, 6).toUpperCase());
   const [uptime, setUptime] = useState(0);
   const [matrixColumns, setMatrixColumns] = useState<Array<{ id: number; left: string; delay: string; duration: string }>>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  // Загрузка данных из API
+  useEffect(() => {
+    loadState().then(state => {
+      setEvents(state.events);
+      setIsLoading(false);
+      
+      const hasSeenOnboarding = localStorage.getItem('has_seen_onboarding');
+      if (!hasSeenOnboarding) {
+        setTimeout(() => setShowOnboarding(true), 500);
+      }
+      
+      setToast({
+        message: `$ connected`,
+        type: 'info'
+      });
+    });
+  }, [updateKey]);
 
   useEffect(() => {
     const columns = Array.from({ length: 20 }, (_, i) => ({
@@ -36,26 +55,13 @@ export const MainApp: React.FC = () => {
     }));
     setMatrixColumns(columns);
 
-    const state = loadState();
-    setEvents(state.events);
-    
-    const hasSeenOnboarding = localStorage.getItem('has_seen_onboarding');
-    if (!hasSeenOnboarding) {
-      setTimeout(() => setShowOnboarding(true), 500);
-    }
-    
-    setToast({
-      message: `$ connected`,
-      type: 'info'
-    });
-
     const timer = setInterval(() => {
       setCurrentTime(new Date());
       setUptime(prev => prev + 1);
     }, 1000);
 
     return () => clearInterval(timer);
-  }, [updateKey]);
+  }, []);
 
   const formatUptime = () => {
     const hours = Math.floor(uptime / 3600);
@@ -65,7 +71,7 @@ export const MainApp: React.FC = () => {
 
   const handleUpdate = () => setUpdateKey(k => k + 1);
 
-  const handleEventAdded = () => {
+  const handleEventAdded = async (event: Event) => {
     handleUpdate();
     const egg = checkEasterEgg('firstEvent');
     if (egg) {
@@ -110,16 +116,12 @@ export const MainApp: React.FC = () => {
     localStorage.setItem('has_seen_onboarding', 'true');
   };
 
-  const handleAutoGenerate = (generatedEvent: Omit<Event, 'id' | 'comments'>) => {
-    const state = loadState();
-    const newEvent: Event = {
+  const handleAutoGenerate = async (generatedEvent: Omit<Event, 'id' | 'comments'>) => {
+    const newEvent = await addEvent({
       ...generatedEvent,
-      id: Date.now().toString() + Math.random().toString(36).substr(2, 9),
-      comments: []
-    };
-    state.events.push(newEvent);
-    saveState(state);
-    handleEventAdded();
+      addedBy: 'NICK'
+    });
+    handleUpdate();
     setToast({ message: `$ generated`, type: 'success' });
   };
 
@@ -131,27 +133,8 @@ export const MainApp: React.FC = () => {
   };
 
   const handleExit = () => {
-    if (window.confirm('Выйти в хаб?')) {
-      navigate('/');
-    }
+    navigate('/');
   };
-
-   // Функция скачивания билетика
-  const handleDownloadTicket = () => {
-    // Путь к файлу билетика в папке public
-    const ticketUrl = '/tickets/eto_ne_troyan.pdf'; // Замените на ваш файл
-    
-    // Создаём временную ссылку для скачивания
-    const link = document.createElement('a');
-    link.href = ticketUrl;
-    link.download = 'eto_ne_troyan.pdf'; // Имя скачиваемого файла
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    
-    setToast({ message: `$ билетик скачан`, type: 'success' });
-  };
-
 
   const stats = {
     confirmed: events.filter(e => e.status === 'УТВЕРЖДЕНО').length,
@@ -164,13 +147,27 @@ export const MainApp: React.FC = () => {
     return Array.from({ length }, () => chars[Math.floor(Math.random() * chars.length)]).join('');
   };
 
+  if (isLoading) {
+    return (
+      <div style={{ 
+        display: 'flex', 
+        justifyContent: 'center', 
+        alignItems: 'center', 
+        height: '100vh',
+        background: '#0a0a0a',
+        color: '#fff',
+        fontFamily: 'monospace',
+        fontSize: '18px'
+      }}>
+        $ loading...
+      </div>
+    );
+  }
+
   return (
     <>
       <div className={styles.app}>
-        {/* Статичный желтый свет фонаря */}
         <div className={styles.lampLight} />
-        
-        {/* Матричный фон */}
         <div className={styles.matrixOverlay}>
           {matrixColumns.map(col => (
             <div
@@ -186,7 +183,6 @@ export const MainApp: React.FC = () => {
             </div>
           ))}
         </div>
-
         <div className={styles.matrixOverlayDeep}>
           {matrixColumns.slice(0, 10).map(col => (
             <div
@@ -225,9 +221,7 @@ export const MainApp: React.FC = () => {
           </div>
           <div className={styles.headerRight}>
             <div className={styles.terminalBox}>
-
-              {/* Кнопка скачивания билетика */}
-              <button className={styles.ticketButton} onClick={handleDownloadTicket} title="Скачать билетик">
+              <button className={styles.ticketButton} onClick={() => window.open('/tickets/ticket.pdf')} title="Скачать билетик">
                 [🎟️ БИЛЕТ]
               </button>
               <button className={styles.exitButton} onClick={handleExit} title="Выйти в хаб">
