@@ -51,7 +51,6 @@
         <div class="header-actions">
             <button onclick="location.href='/'">← САЙТ</button>
             <button onclick="loadData()">🔄 ОБНОВИТЬ</button>
-            <button onclick="clearFirebase()">🗑️ ОЧИСТИТЬ БАЗУ</button>
         </div>
     </header>
 
@@ -96,30 +95,19 @@ if (p.get('key') !== KEY && location.hostname !== 'localhost' && location.hostna
 }
 
 // ============ КОНФИГ ============
-// ЗАМЕНИТЕ на ваш URL из Firebase!
-var FB_URL = 'https://console.firebase.google.com/u/0/project/call-sheet-analytics/database/call-sheet-analytics-default-rtdb/data/~2F';
-
+var API_URL = 'http://nikitv86.beget.tech/api.php';
 var chart = null;
 
 // ============ ЗАГРУЗКА ДАННЫХ ============
 async function loadData() {
     try {
-        var r = await fetch(FB_URL + '/visits.json');
-        var data = await r.json();
+        var r = await fetch(API_URL);
+        var visits = await r.json();
         
-        if (!data) {
+        if (!visits || !visits.length) {
             document.getElementById('syncInfo').innerHTML = '⚠️ Нет данных в базе';
             return;
         }
-        
-        // Преобразуем объект в массив
-        var visits = [];
-        for (var id in data) {
-            visits.push(data[id]);
-        }
-        visits.sort(function(a, b) {
-            return new Date(b.timestamp) - new Date(a.timestamp);
-        });
         
         // Собираем статистику
         var stats = {
@@ -136,19 +124,16 @@ async function loadData() {
         for (var i = 0; i < visits.length; i++) {
             var v = visits[i];
             
-            // Устройства
             stats.devices[v.device] = (stats.devices[v.device] || 0) + 1;
             if (v.device === 'Desktop') stats.desktop++;
             if (v.device === 'Mobile') stats.mobile++;
             if (v.device === 'Tablet') stats.tablet++;
             
-            // Браузеры и ОС
             stats.browsers[v.browser] = (stats.browsers[v.browser] || 0) + 1;
             stats.os[v.os] = (stats.os[v.os] || 0) + 1;
             
-            // По дням
-            var day = v.timestamp.split('T')[0];
-            stats.daily[day] = (stats.daily[day] || 0) + 1;
+            var day = v.created_at ? v.created_at.split(' ')[0] : '';
+            if (day) stats.daily[day] = (stats.daily[day] || 0) + 1;
         }
         
         // Отображаем
@@ -157,13 +142,15 @@ async function loadData() {
         document.getElementById('mobileCount').textContent = stats.mobile;
         document.getElementById('tabletCount').textContent = stats.tablet;
         
-        document.getElementById('syncInfo').innerHTML = '🟢 Всего визитов: ' + stats.total + ' | Последний: ' + new Date(visits[0].timestamp).toLocaleString('ru-RU');
+        var lastVisit = visits[visits.length - 1];
+        var lastTime = lastVisit && lastVisit.created_at ? new Date(lastVisit.created_at).toLocaleString('ru-RU') : '—';
+        document.getElementById('syncInfo').innerHTML = '🟢 Beget MySQL | Всего: ' + stats.total + ' | Последний: ' + lastTime;
         
         showStats('deviceStats', stats.devices, stats.total);
         showStats('browserStats', stats.browsers, stats.total);
         showStats('osStats', stats.os, stats.total);
         showChart(stats.daily);
-        showTable(visits.slice(0, 100));
+        showTable(visits.slice(-100).reverse());
         
     } catch(e) {
         document.getElementById('syncInfo').innerHTML = '❌ Ошибка: ' + e.message;
@@ -208,17 +195,10 @@ function showTable(visits) {
     var html = '';
     for (var i = 0; i < visits.length; i++) {
         var v = visits[i];
-        html += '<tr><td>' + new Date(v.timestamp).toLocaleString('ru-RU') + '</td><td>' + (v.page||'—') + '</td><td>' + (v.device||'—') + '</td><td>' + (v.browser||'—') + '</td><td>' + (v.os||'—') + '</td><td>' + (v.screen||'—') + '</td><td>' + (v.lang||'—') + '</td></tr>';
+        var time = v.created_at ? new Date(v.created_at.replace(' ', 'T')).toLocaleString('ru-RU') : '—';
+        html += '<tr><td>' + time + '</td><td>' + (v.page||'—') + '</td><td>' + (v.device||'—') + '</td><td>' + (v.browser||'—') + '</td><td>' + (v.os||'—') + '</td><td>' + (v.screen||'—') + '</td><td>' + (v.lang||'—') + '</td></tr>';
     }
     document.getElementById('visitsBody').innerHTML = html || '<tr><td colspan="7" style="text-align:center;padding:40px">Нет данных</td></tr>';
-}
-
-async function clearFirebase() {
-    if (confirm('⚠️ Удалить ВСЕ данные из Firebase?')) {
-        await fetch(FB_URL + '/visits.json', { method: 'DELETE' });
-        alert('База очищена');
-        loadData();
-    }
 }
 
 // ============ ЗАПУСК ============
