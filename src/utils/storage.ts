@@ -1,6 +1,6 @@
 import { Event, Comment, AppState } from '../types';
 
-const SUPABASE_URL = 'https://czskbxqkyggjbzuyedjm.supabase.co/rest/v1';
+const SUPABASE_URL = 'https://call-api.nikiitsky.workers.dev';
 const SUPABASE_KEY = 'sb_publishable_DLRSW3kv4o9QoTVXjGVnYg_iWMNSCmX';
 
 // Прокси URL с ключом в параметрах
