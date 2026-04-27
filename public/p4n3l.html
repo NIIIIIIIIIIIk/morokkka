@@ -89,7 +89,7 @@
 // ============ ЗАЩИТА ============
 var KEY = 'HuItA';
 var p = new URLSearchParams(location.search);
-if (p.get('key') !== KEY && location.hostname !== 'localhost' && location.hostname !== '127.0.0.1') {
+if (p.get('key') !== KEY && location.hostname !== 'localhost' && location.hostname !== '172.28.240.1') {
     document.body.innerHTML = '<div style="display:flex;justify-content:center;align-items:center;height:100vh;background:#0a0a0a;color:#888;font-family:monospace"><div style="text-align:center"><h1 style="font-size:72px;color:#e50914">404</h1><p>File not found</p></div></div>';
     throw new Error('no');
 }
