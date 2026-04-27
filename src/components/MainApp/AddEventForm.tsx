@@ -10,14 +10,14 @@ interface AddEventFormProps {
 
 export const AddEventForm: React.FC<AddEventFormProps> = ({ onAdd }) => {
   const [isOpen, setIsOpen] = useState(false);
-  const [formData, setFormData] = useState({
+const [formData, setFormData] = useState({
     date: '',
     scene: '',
     location: '',
     notes: '',
-    status: 'PENDING' as Event['status']
+    status: 'PENDING' as Event['status'], // ← добавить запятую
     addedBy: 'NIK'
-  });
+});
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
