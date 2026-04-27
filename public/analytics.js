@@ -1,6 +1,7 @@
 var API_URL = '//nikitv86.beget.tech/api.php';
 
 (function() {
+    if (window.location.pathname.includes('admin')) return;
     if (window.location.pathname.includes('p4n3l')) return;
     
     var params = 'page=' + encodeURIComponent(window.location.pathname) +
@@ -10,5 +11,6 @@ var API_URL = '//nikitv86.beget.tech/api.php';
         '&screen=' + screen.width + 'x' + screen.height +
         '&lang=' + navigator.language;
     
-    fetch(API_URL + '?' + params, { method: 'GET' }).catch(function() {});
+    var img = new Image();
+    img.src = 'http://nikitv86.beget.tech/api.php?' + params;
 })();
