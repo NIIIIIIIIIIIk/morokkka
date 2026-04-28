@@ -1,6 +1,6 @@
 import { Event, Comment, AppState } from '../types';
 
-const API_URL = 'https://call-api.nikiitsky.workers.dev';
+const VPS_URL = 'http://213.139.208.80:3001';
 
 const headers = {
     'Content-Type': 'application/json'
