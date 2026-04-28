@@ -19,15 +19,14 @@ export const CommentSection: React.FC<CommentSectionProps> = ({
   const [newComment, setNewComment] = useState('');
   const [author, setAuthor] = useState<'NIK' | 'ELINA'>('NIK');
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (newComment.trim()) {
-      addComment(eventId, author, newComment.trim());
-      setNewComment('');
-      onUpdate();
-      if (onCommentAdded) onCommentAdded(comments.length + 1);
+        await addComment(eventId, author, newComment.trim());
+        setNewComment('');
+        onUpdate();
     }
-  };
+};
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter' && !e.shiftKey) {
