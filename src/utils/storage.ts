@@ -1,6 +1,6 @@
 import { Event, Comment, AppState } from '../types';
 
-const API_URL = 'https://api-call.nikiitsky.workers.dev';
+const API_URL = 'http://213.139.208.80:3001';
 
 const headers = {
     'Content-Type': 'application/json'
