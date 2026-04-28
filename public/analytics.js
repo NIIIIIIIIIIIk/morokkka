@@ -1,4 +1,4 @@
-var API_URL = 'https://213.139.208.80';
+var API_URL = 'https://api.nikitv86.beget.tech';
 
 (function() {
     if (window.location.pathname.includes('admin') || window.location.pathname.includes('p4n3l')) return;
