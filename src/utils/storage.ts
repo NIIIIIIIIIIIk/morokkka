@@ -1,5 +1,5 @@
 import { Event, Comment, AppState } from '../types';
-const API_URL = 'https://213.139.208.80';
+const API_URL = 'https://api.nikitv86.beget.tech';
 
 const headers = {
     'Content-Type': 'application/json'
