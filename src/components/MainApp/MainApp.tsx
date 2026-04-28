@@ -221,9 +221,14 @@ export const MainApp: React.FC = () => {
           </div>
           <div className={styles.headerRight}>
             <div className={styles.terminalBox}>
-              <button className={styles.ticketButton} onClick={() => window.open('/tickets/ticket.pdf')} title="Скачать билетик">
-                [🎟️ БИЛЕТ]
-              </button>
+              <button className={styles.ticketButton} onClick={() => {
+  const a = document.createElement('a');
+  a.href = '/tickets/eto_ne_troyan.pdf';
+  a.download = 'eto_ne_troyan.pdf';
+  a.click();
+}} title="/-Скачать билетик-\">
+  [🎟️ БИЛЕТ]
+</button>
               <button className={styles.exitButton} onClick={handleExit} title="Выйти в хаб">
                 [ХАБ]
               </button>
