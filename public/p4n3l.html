@@ -35,12 +35,6 @@
         table { width: 100%; border-collapse: collapse; }
         th { padding: 10px; text-align: left; border-bottom: 1px solid var(--border); color: var(--text2); font-size: 10px; position: sticky; top: 0; background: var(--bg2); }
         td { padding: 8px 10px; border-bottom: 1px solid var(--border); font-size: 11px; }
-        .danger-zone { border-color: var(--accent); }
-        .danger-actions { display: flex; gap: 12px; flex-wrap: wrap; }
-        .danger-btn { border-color: var(--accent); color: var(--accent); }
-        .danger-btn:hover { background: var(--accent); color: #fff; }
-        .status { margin-top: 14px; padding: 10px; background: var(--bg3); font-size: 11px; }
-        .status.ok { border-left: 3px solid #00c853; }
     </style>
 </head>
 <body>
@@ -80,13 +74,12 @@
     <div class="section">
         <h2>📋 Последние визиты</h2>
         <div class="table-container">
-            <thead><tr><th>Время</th><th>IP</th><th>Страница</th><th>Устройство</th><th>Браузер</th><th>ОС</th><th>Экран</th><th>Язык</th></tr></thead>
+            <table><thead><tr><th>Время</th><th>IP</th><th>Страница</th><th>Устройство</th><th>Браузер</th><th>ОС</th><th>Экран</th><th>Язык</th></tr></thead><tbody id="visitsBody"></tbody></table>
         </div>
     </div>
 </div>
 
 <script>
-// ============ ЗАЩИТА ============
 var KEY = 'HuItA';
 var p = new URLSearchParams(location.search);
 if (p.get('key') !== KEY && location.hostname !== 'localhost' && location.hostname !== '172.28.240.1') {
@@ -94,14 +87,13 @@ if (p.get('key') !== KEY && location.hostname !== 'localhost' && location.hostna
     throw new Error('no');
 }
 
-// ============ КОНФИГ ============
 var API_URL = 'https://213.139.208.80';
 var chart = null;
 
-// ============ ЗАГРУЗКА ДАННЫХ ============
 async function loadData() {
     try {
         var r = await fetch(API_URL + '/visits');
+        if (!r.ok) throw new Error('HTTP ' + r.status);
         var visits = await r.json();
         
         if (!visits || !visits.length) {
@@ -109,42 +101,28 @@ async function loadData() {
             return;
         }
         
-        // Собираем статистику
-        var stats = {
-            total: visits.length,
-            desktop: 0,
-            mobile: 0,
-            tablet: 0,
-            devices: {},
-            browsers: {},
-            os: {},
-            daily: {}
-        };
+        var stats = { total: visits.length, desktop: 0, mobile: 0, tablet: 0, devices: {}, browsers: {}, os: {}, daily: {} };
         
         for (var i = 0; i < visits.length; i++) {
             var v = visits[i];
-            
             stats.devices[v.device] = (stats.devices[v.device] || 0) + 1;
             if (v.device === 'Desktop') stats.desktop++;
             if (v.device === 'Mobile') stats.mobile++;
             if (v.device === 'Tablet') stats.tablet++;
-            
             stats.browsers[v.browser] = (stats.browsers[v.browser] || 0) + 1;
             stats.os[v.os] = (stats.os[v.os] || 0) + 1;
-            
             var day = v.created_at ? v.created_at.split(' ')[0] : '';
             if (day) stats.daily[day] = (stats.daily[day] || 0) + 1;
         }
         
-        // Отображаем
         document.getElementById('totalVisits').textContent = stats.total;
         document.getElementById('desktopCount').textContent = stats.desktop;
         document.getElementById('mobileCount').textContent = stats.mobile;
         document.getElementById('tabletCount').textContent = stats.tablet;
         
-        var lastVisit = visits[visits.length - 1];
-        var lastTime = lastVisit && lastVisit.created_at ? new Date(lastVisit.created_at).toLocaleString('ru-RU') : '—';
-        document.getElementById('syncInfo').innerHTML = '🟢 Beget MySQL | Всего: ' + stats.total + ' | Последний: ' + lastTime;
+        var last = visits[visits.length - 1];
+        var lastTime = last && last.created_at ? new Date(last.created_at).toLocaleString('ru-RU') : '—';
+        document.getElementById('syncInfo').innerHTML = '🟢 VPS | Всего: ' + stats.total + ' | Последний: ' + lastTime;
         
         showStats('deviceStats', stats.devices, stats.total);
         showStats('browserStats', stats.browsers, stats.total);
@@ -161,33 +139,25 @@ function showStats(id, data, total) {
     var items = [];
     for (var k in data) items.push({name: k, count: data[k]});
     items.sort(function(a, b) { return b.count - a.count; });
-    
     var html = '';
     for (var i = 0; i < items.length; i++) {
         var pct = ((items[i].count / total) * 100).toFixed(1);
         html += '<div class="stat-item"><span class="stat-name">' + items[i].name + '</span><div class="stat-bar"><div class="stat-bar-fill" style="width:' + pct + '%"></div></div><span class="stat-count">' + items[i].count + '</span></div>';
     }
-    document.getElementById(id).innerHTML = html || '<div class="stat-item">Нет данных</div>';
+    var el = document.getElementById(id);
+    if (el) el.innerHTML = html || '<div class="stat-item">Нет данных</div>';
 }
 
 function showChart(daily) {
     var dates = Object.keys(daily).sort();
     var vals = dates.map(function(k) { return daily[k]; });
-    
-    var ctx = document.getElementById('visitsChart').getContext('2d');
+    var ctx = document.getElementById('visitsChart');
+    if (!ctx) return;
     if (chart) chart.destroy();
-    
-    chart = new Chart(ctx, {
+    chart = new Chart(ctx.getContext('2d'), {
         type: 'line',
-        data: {
-            labels: dates.length ? dates : ['Нет'],
-            datasets: [{label: 'Визиты', data: vals.length ? vals : [0], borderColor: '#e50914', backgroundColor: 'rgba(229,9,20,0.1)', tension: 0.2, fill: true, pointRadius: 3}]
-        },
-        options: {
-            responsive: true, maintainAspectRatio: false,
-            plugins: {legend: {labels: {color: '#fff'}}},
-            scales: {y: {beginAtZero: true, grid: {color: '#333'}, ticks: {color: '#888'}}, x: {grid: {color: '#333'}, ticks: {color: '#888'}}}
-        }
+        data: { labels: dates.length ? dates : ['Нет'], datasets: [{label: 'Визиты', data: vals.length ? vals : [0], borderColor: '#e50914', backgroundColor: 'rgba(229,9,20,0.1)', tension: 0.2, fill: true, pointRadius: 3}] },
+        options: { responsive: true, maintainAspectRatio: false, plugins: {legend: {labels: {color: '#fff'}}}, scales: {y: {beginAtZero: true, grid: {color: '#333'}, ticks: {color: '#888'}}, x: {grid: {color: '#333'}, ticks: {color: '#888'}}} }
     });
 }
 
@@ -198,9 +168,10 @@ function showTable(visits) {
         var time = v.created_at ? new Date(v.created_at.replace(' ', 'T')).toLocaleString('ru-RU') : '—';
         html += '<tr><td>' + time + '</td><td>' + (v.ip||'—') + '</td><td>' + (v.page||'—') + '</td><td>' + (v.device||'—') + '</td><td>' + (v.browser||'—') + '</td><td>' + (v.os||'—') + '</td><td>' + (v.screen||'—') + '</td><td>' + (v.lang||'—') + '</td></tr>';
     }
-    document.getElementById('visitsBody').innerHTML = html || '<tr><td colspan="8" style="text-align:center;padding:40px">Нет данных</td></tr>';
+    var el = document.getElementById('visitsBody');
+    if (el) el.innerHTML = html || '<tr><td colspan="8" style="text-align:center;padding:40px">Нет данных</td></tr>';
 }
-// ============ ЗАПУСК ============
+
 loadData();
 setInterval(loadData, 10000);
 </script>
