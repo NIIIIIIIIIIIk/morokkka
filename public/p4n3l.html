@@ -101,7 +101,7 @@ var chart = null;
 // ============ ЗАГРУЗКА ДАННЫХ ============
 async function loadData() {
     try {
-        var r = await fetch(API_URL);
+        var r = await fetch(API_URL + '/visits');
         var visits = await r.json();
         
         if (!visits || !visits.length) {
