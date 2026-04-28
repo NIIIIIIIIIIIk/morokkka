@@ -196,11 +196,10 @@ function showTable(visits) {
     for (var i = 0; i < visits.length; i++) {
         var v = visits[i];
         var time = v.created_at ? new Date(v.created_at.replace(' ', 'T')).toLocaleString('ru-RU') : '—';
-        html += '<tr><td>' + time + '</td><td>' + (v.page||'—') + '</td><td>' + (v.device||'—') + '</td><td>' + (v.browser||'—') + '</td><td>' + (v.os||'—') + '</td><td>' + (v.screen||'—') + '</td><td>' + (v.lang||'—') + '</td></tr>';
+        html += '<tr><td>' + time + '</td><td>' + (v.ip||'—') + '</td><td>' + (v.page||'—') + '</td><td>' + (v.device||'—') + '</td><td>' + (v.browser||'—') + '</td><td>' + (v.os||'—') + '</td><td>' + (v.screen||'—') + '</td><td>' + (v.lang||'—') + '</td></tr>';
     }
-    document.getElementById('visitsBody').innerHTML = html || '<tr><td colspan="7" style="text-align:center;padding:40px">Нет данных</td></tr>';
+    document.getElementById('visitsBody').innerHTML = html || '<tr><td colspan="8" style="text-align:center;padding:40px">Нет данных</td></tr>';
 }
-
 // ============ ЗАПУСК ============
 loadData();
 setInterval(loadData, 10000);
